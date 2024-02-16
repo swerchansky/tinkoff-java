@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.command.Command;
 import java.util.List;
@@ -29,7 +30,7 @@ public class BotUpdatesListener implements UpdatesListener {
         if (message == null) {
             return;
         }
-        log.debug("Received message: {} from user {}", message.text(), message.from().username());
+        log.debug("Received message: \"{}\" from user \"{}\"", message.text(), message.from().username());
         Long chatId = message.chat().id();
         CommandArguments commandArguments = CommandArguments.fromString(message.text());
         commands.stream()
@@ -37,8 +38,9 @@ public class BotUpdatesListener implements UpdatesListener {
             .findFirst()
             .ifPresentOrElse(
                 command -> {
-                    String response = command.execute(commandArguments.arguments);
-                    telegramBot.execute(new SendMessage(chatId, response));
+                    String responseText = command.execute(commandArguments.arguments);
+                    SendMessage sendMessage = new SendMessage(chatId, responseText).parseMode(ParseMode.Markdown);
+                    var response = telegramBot.execute(sendMessage);
                 },
                 () -> telegramBot.execute(new SendMessage(chatId, "Unknown command"))
             );
