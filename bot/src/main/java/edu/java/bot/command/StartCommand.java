@@ -17,6 +17,10 @@ public class StartCommand implements Command {
 
     @Override
     public String execute(List<String> arguments) {
-        return "This command is not implemented yet";
+        return """
+            Hello! I'm a bot that will help you track changes to websites and notify you of them
+
+            You can see the list of available commands with the command /help
+            """;
     }
 }
