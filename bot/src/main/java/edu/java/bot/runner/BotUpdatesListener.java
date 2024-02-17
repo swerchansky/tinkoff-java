@@ -40,7 +40,7 @@ public class BotUpdatesListener implements UpdatesListener {
                 command -> {
                     String responseText = command.execute(commandArguments.arguments);
                     SendMessage sendMessage = new SendMessage(chatId, responseText).parseMode(ParseMode.Markdown);
-                    var response = telegramBot.execute(sendMessage);
+                    telegramBot.execute(sendMessage);
                 },
                 () -> telegramBot.execute(new SendMessage(chatId, "Unknown command"))
             );
