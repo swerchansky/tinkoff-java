@@ -11,6 +11,11 @@ public class UntrackCommand implements Command {
     }
 
     @Override
+    public String getDescription() {
+        return "`<link>` parameter required to stop tracking a link";
+    }
+
+    @Override
     public String execute(List<String> arguments) {
         if (arguments.size() != 1) {
             return """

@@ -11,6 +11,11 @@ public class StartCommand implements Command {
     }
 
     @Override
+    public String getDescription() {
+        return "start bot";
+    }
+
+    @Override
     public String execute(List<String> arguments) {
         return "This command is not implemented yet";
     }

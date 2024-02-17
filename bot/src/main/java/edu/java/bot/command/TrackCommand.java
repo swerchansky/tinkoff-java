@@ -11,6 +11,11 @@ public class TrackCommand implements Command {
     }
 
     @Override
+    public String getDescription() {
+        return "`<link>` parameter required to start tracking a link";
+    }
+
+    @Override
     public String execute(List<String> arguments) {
         if (arguments.size() != 1) {
             return """

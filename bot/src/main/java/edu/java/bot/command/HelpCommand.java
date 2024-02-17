@@ -1,30 +1,34 @@
 package edu.java.bot.command;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class HelpCommand implements Command {
+    private final List<Command> commands;
+
     @Override
     public String getCommandName() {
         return "/help";
     }
 
     @Override
+    public String getDescription() {
+        return "show help";
+    }
+
+    @Override
     public String execute(List<String> arguments) {
-        return """
-            *Available commands:*
-            /help - show help
-            /start - start the bot
-            /track `<link>` - track the link
-            /untrack `<link>` - untrack the link
-            /list - show all tracked links
-
-            *Example:*
-            /track https://www.google.com
-            /untrack https://www.google.com
-
-            *Note*: the bot can track only links that are sent with command /track in the same message
-            """.stripIndent();
+        StringBuilder helpMessage = new StringBuilder();
+        helpMessage.append("*Available commands:*").append(System.lineSeparator());
+        commands.forEach(command ->
+            helpMessage.append(command.getCommandName())
+                .append(" - ")
+                .append(command.getDescription())
+                .append(System.lineSeparator())
+        );
+        return helpMessage.toString();
     }
 }
