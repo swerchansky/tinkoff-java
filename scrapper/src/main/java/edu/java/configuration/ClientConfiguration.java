@@ -7,11 +7,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class ClientConfiguration {
+    private static final String CONTENT_TYPE = "Content-Type";
+
     @Bean
     public WebClient githubWebClient(ApplicationConfig applicationConfig) {
         return WebClient.builder()
             .baseUrl(applicationConfig.baseGithubUrl())
-            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
     }
 
@@ -19,7 +21,7 @@ public class ClientConfiguration {
     public WebClient stackOverflowWebClient(ApplicationConfig applicationConfig) {
         return WebClient.builder()
             .baseUrl(applicationConfig.baseStackOverflowUrl())
-            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .defaultHeader(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
     }
 }
