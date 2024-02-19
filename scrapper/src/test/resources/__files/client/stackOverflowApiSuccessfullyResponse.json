@@ -1,0 +1,39 @@
+{
+    "items": [
+        {
+            "tags": [
+                "mysql",
+                "database",
+                "binary-data",
+                "data-storage"
+            ],
+            "owner": {
+                "account_id": 2,
+                "reputation": 6156,
+                "user_id": 2,
+                "user_type": "registered",
+                "accept_rate": 100,
+                "profile_image": "",
+                "display_name": "owner",
+                "link": ""
+            },
+            "is_answered": true,
+            "view_count": 87378,
+            "protected_date": 1413145737,
+            "closed_date": 1543505764,
+            "accepted_answer_id": 26,
+            "answer_count": 9,
+            "score": 199,
+            "last_activity_date": 1606966671,
+            "creation_date": 1217567395,
+            "last_edit_date": 1606966671,
+            "question_id": 1,
+            "link": "",
+            "closed_reason": "Needs more focus",
+            "title": "Binary Data in MySQL"
+        }
+    ],
+    "has_more": false,
+    "quota_max": 10000,
+    "quota_remaining": 9980
+}
