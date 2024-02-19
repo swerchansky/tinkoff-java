@@ -1,6 +1,7 @@
 package edu.java.client.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
@@ -8,25 +9,18 @@ import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class StackOverflowQuestionResponse {
-    public String owner;
-    public String title;
-    public String updatedAt;
-
+public class StackOverflowQuestionsResponse {
     @JsonProperty("items")
-    public void setOwner(List<QuestionResponse> owner) {
-        QuestionResponse questionResponse = owner.getFirst();
-        this.owner = questionResponse.owner;
-        this.title = questionResponse.title;
-        this.updatedAt = questionResponse.updatedAt;
-    }
+    public List<QuestionResponse> questions;
 
+    @Data
+    @EqualsAndHashCode(callSuper = false)
     public static class QuestionResponse {
         public String owner;
         @JsonProperty("title")
         public String title;
         @JsonProperty("last_activity_date")
-        public String updatedAt;
+        public OffsetDateTime updatedAt;
 
         @JsonProperty("owner")
         public void setOwner(Map<String, String> owner) {
