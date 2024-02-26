@@ -10,15 +10,19 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
 public record ApplicationConfig(
-    @NotEmpty
-    @DefaultValue("https://api.github.com")
-    String baseGithubUrl,
-    @NotEmpty
-    @DefaultValue("https://api.stackexchange.com/2.3")
-    String baseStackOverflowUrl,
+    BaseUrls baseUrls,
     @NotNull
     Scheduler scheduler
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
+    }
+
+    public record BaseUrls(
+        @NotEmpty
+        @DefaultValue("https://api.github.com")
+        String github,
+        @NotEmpty
+        @DefaultValue("https://api.stackexchange.com/2.3")
+        String stackOverflow) {
     }
 }
