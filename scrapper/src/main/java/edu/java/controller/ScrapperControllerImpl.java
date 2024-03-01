@@ -16,29 +16,29 @@ public class ScrapperControllerImpl implements ScrapperController {
 
     @Override
     public void addChat(long id) {
-        log.debug("addChat stub: id={}", id);
+        //stub
     }
 
     @Override
     public void deleteChat(long id) {
-        log.debug("deleteChat stub: id={}", id);
+        //stub
     }
 
     @Override
     public ListLinksResponse getLinks(long id) {
-        log.debug("getLinks stub: id={}", id);
+        //stub
         return new ListLinksResponse(List.of(LINK_RESPONSE_STUB), 1);
     }
 
     @Override
     public LinkResponse addLink(long id, AddLinkRequest link) {
-        log.debug("addLink stub: id={}, link={}", id, link);
+        //stub
         return LINK_RESPONSE_STUB;
     }
 
     @Override
     public LinkResponse deleteLink(long id, RemoveLinkRequest link) {
-        log.debug("deleteLink stub: id={}, link={}", id, link);
+        //stub
         return LINK_RESPONSE_STUB;
     }
 }
