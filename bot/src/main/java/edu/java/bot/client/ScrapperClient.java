@@ -1,5 +1,6 @@
 package edu.java.bot.client;
 
+import edu.java.bot.client.dto.AddLinkRequest;
 import edu.java.bot.client.dto.LinkResponse;
 import edu.java.bot.client.dto.ListLinksResponse;
 import edu.java.bot.client.dto.RemoveLinkRequest;
@@ -40,11 +41,11 @@ public class ScrapperClient {
     }
 
     public Mono<LinkResponse> addLink(long id, String url) {
-        return sendLinkRequestWithBody(HttpMethod.POST, id, url);
+        return sendLinkRequestWithBody(HttpMethod.POST, id, new AddLinkRequest(URI.create(url)));
     }
 
     public Mono<LinkResponse> deleteLink(long id, String url) {
-        return sendLinkRequestWithBody(HttpMethod.DELETE, id, url);
+        return sendLinkRequestWithBody(HttpMethod.DELETE, id, new RemoveLinkRequest(URI.create(url)));
     }
 
     private Mono<Void> sendChatRequest(HttpMethod method, long id) {
@@ -55,11 +56,11 @@ public class ScrapperClient {
             .bodyToMono(Void.class);
     }
 
-    private Mono<LinkResponse> sendLinkRequestWithBody(HttpMethod method, long id, String url) {
+    private Mono<LinkResponse> sendLinkRequestWithBody(HttpMethod method, long id, Object requestBody) {
         return scrapperWebClient.method(method)
             .uri(LINKS_ENDPOINT)
             .header(TG_CHAT_ID_HEADER, String.valueOf(id))
-            .bodyValue(new RemoveLinkRequest(URI.create(url)))
+            .bodyValue(requestBody)
             .retrieve()
             .onStatus(this::isApiError, this::handleApiError)
             .bodyToMono(LinkResponse.class);
