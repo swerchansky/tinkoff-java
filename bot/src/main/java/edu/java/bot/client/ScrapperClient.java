@@ -1,6 +1,5 @@
 package edu.java.bot.client;
 
-import edu.java.bot.client.dto.AddLinkRequest;
 import edu.java.bot.client.dto.LinkResponse;
 import edu.java.bot.client.dto.ListLinksResponse;
 import edu.java.bot.client.dto.RemoveLinkRequest;
@@ -8,6 +7,7 @@ import edu.java.bot.client.exception.ApiErrorException;
 import edu.java.bot.controller.dto.ApiErrorResponse;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
@@ -23,19 +23,11 @@ public class ScrapperClient {
     private final WebClient scrapperWebClient;
 
     public Mono<Void> registerChat(long id) {
-        return scrapperWebClient.post()
-            .uri(CHAT_ENDPOINT, id)
-            .retrieve()
-            .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(Void.class);
+        return sendChatRequest(HttpMethod.POST, id);
     }
 
     public Mono<Void> deleteChat(long id) {
-        return scrapperWebClient.delete()
-            .uri(CHAT_ENDPOINT, id)
-            .retrieve()
-            .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(Void.class);
+        return sendChatRequest(HttpMethod.DELETE, id);
     }
 
     public Mono<ListLinksResponse> getLinks(long id) {
@@ -48,17 +40,23 @@ public class ScrapperClient {
     }
 
     public Mono<LinkResponse> addLink(long id, String url) {
-        return scrapperWebClient.post()
-            .uri(LINKS_ENDPOINT)
-            .header(TG_CHAT_ID_HEADER, String.valueOf(id))
-            .bodyValue(new AddLinkRequest(URI.create(url)))
-            .retrieve()
-            .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(LinkResponse.class);
+        return sendLinkRequestWithBody(HttpMethod.POST, id, url);
     }
 
     public Mono<LinkResponse> deleteLink(long id, String url) {
-        return scrapperWebClient.post()
+        return sendLinkRequestWithBody(HttpMethod.DELETE, id, url);
+    }
+
+    private Mono<Void> sendChatRequest(HttpMethod method, long id) {
+        return scrapperWebClient.method(method)
+            .uri(CHAT_ENDPOINT, id)
+            .retrieve()
+            .onStatus(this::isApiError, this::handleApiError)
+            .bodyToMono(Void.class);
+    }
+
+    private Mono<LinkResponse> sendLinkRequestWithBody(HttpMethod method, long id, String url) {
+        return scrapperWebClient.method(method)
             .uri(LINKS_ENDPOINT)
             .header(TG_CHAT_ID_HEADER, String.valueOf(id))
             .bodyValue(new RemoveLinkRequest(URI.create(url)))
