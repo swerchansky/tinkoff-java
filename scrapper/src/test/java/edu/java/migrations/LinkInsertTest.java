@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class LinkInsertTest extends IntegrationEnvironment {
     private static Statement statement;
+    private final String SQL_INSERT = "INSERT INTO link (link,type_id,checked_date) VALUES ('http://google.com', 1, now())";
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -29,14 +30,14 @@ public class LinkInsertTest extends IntegrationEnvironment {
     @Test
     @DisplayName("Insert link")
     public void insertTest() throws SQLException {
-        int result = statement.executeUpdate("INSERT INTO link (link,type_id) VALUES ('http://google.com', 1)");
+        int result = statement.executeUpdate(SQL_INSERT);
         assertThat(result).isEqualTo(1);
     }
 
     @Test
     @DisplayName("Select link")
     public void selectTest() throws SQLException {
-        statement.executeUpdate("INSERT INTO link (link,type_id) VALUES ('http://google.com', 1)");
+        statement.executeUpdate(SQL_INSERT);
         var resultSet = statement.executeQuery("SELECT * FROM link");
         assertThat(resultSet.next()).isTrue();
         assertThat(resultSet.getString("link")).isEqualTo("http://google.com");
