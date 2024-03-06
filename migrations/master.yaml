@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: CREATE
+      author: swerchansky
+      changes:
+        - tagDatabase:
+            tag: CREATE
+  - include:
+      file: create_chat_table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: create_link_table.sql
+      relativeToChangelogFile: true
+  - include:
+      file: create_link_chat_table.sql
+      relativeToChangelogFile: true
