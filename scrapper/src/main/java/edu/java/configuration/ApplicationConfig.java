@@ -23,6 +23,10 @@ public record ApplicationConfig(
         String github,
         @NotEmpty
         @DefaultValue("https://api.stackexchange.com/2.3")
-        String stackOverflow) {
+        String stackOverflow,
+        @NotEmpty
+        @DefaultValue("http//localhost:8090")
+        String bot
+    ) {
     }
 }
