@@ -1,4 +1,4 @@
-package edu.java.migrations;
+package edu.java;
 
 import java.io.File;
 import java.nio.file.Path;
