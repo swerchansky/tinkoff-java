@@ -3,7 +3,6 @@
 --changeset CREATE:1
 create table if not exists link
 (
-    link_id           bigserial primary key,
-    link         text      not null,
+    url          text primary key,
     checked_date timestamp not null
 );

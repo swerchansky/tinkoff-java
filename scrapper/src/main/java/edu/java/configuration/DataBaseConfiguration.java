@@ -19,7 +19,7 @@ import static java.time.OffsetDateTime.ofInstant;
 @Configuration
 public class DataBaseConfiguration {
     @Value("${spring.datasource.url}")
-    private static String url = "jdbc:postgresql://postgresql:5432/scrapper";
+    private static String url = "jdbc:postgresql://localhost:5432/scrapper";
 
     @Value("${spring.datasource.username}")
     private static String username = "postgres";
@@ -55,8 +55,7 @@ public class DataBaseConfiguration {
         return (rs, rowNum) -> {
             try {
                 return new Link(
-                    rs.getLong("id"),
-                    new URI(rs.getString("link")),
+                    new URI(rs.getString("url")),
                     ofInstant(rs.getTimestamp("checked_date").toInstant(), ZoneId.of("UTC"))
                 );
             } catch (URISyntaxException e) {
@@ -71,8 +70,7 @@ public class DataBaseConfiguration {
             try {
                 return new LinkChat(
                     new Link(
-                        rs.getLong("link_id"),
-                        new URI(rs.getString("link")),
+                        new URI(rs.getString("url")),
                         ofInstant(rs.getTimestamp("checked_date").toInstant(), ZoneId.of("UTC"))
                     ),
                     new Chat(rs.getLong("chat_id"))

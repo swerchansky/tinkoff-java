@@ -3,9 +3,9 @@
 --changeset CREATE:1
 create table if not exists link_chat
 (
-    link_id bigint,
+    url     text,
     chat_id bigint,
-    primary key (link_id, chat_id),
-    foreign key (link_id) references link (link_id),
+    primary key (url, chat_id),
+    foreign key (url) references link (url),
     foreign key (chat_id) references chat (chat_id)
 )

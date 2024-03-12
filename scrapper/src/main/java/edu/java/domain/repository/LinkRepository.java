@@ -14,14 +14,9 @@ public class LinkRepository {
     private final JdbcOperations jdbcOperations;
     private final RowMapper<Link> linkRowMapper;
 
-    public Link findById(Long id) {
-        String sql = "select * from link where link_id = ?";
-        return jdbcOperations.queryForObject(sql, linkRowMapper, id);
-    }
-
-    public Link findByLink(URI link) {
-        String sql = "select * from link where link = ?";
-        return jdbcOperations.queryForObject(sql, linkRowMapper, link.toString());
+    public Link findByUrl(URI url) {
+        String sql = "select * from link where url = ?";
+        return jdbcOperations.queryForObject(sql, linkRowMapper, url.toString());
     }
 
     public List<Link> findAll() {
@@ -29,14 +24,14 @@ public class LinkRepository {
         return jdbcOperations.query(sql, linkRowMapper);
     }
 
-    public Link add(URI link) {
-        String sql = "insert into link (link, checked_date) values (?, now()) on conflict do nothing";
-        jdbcOperations.update(sql, link.toString());
-        return findByLink(link);
+    public Link add(URI url) {
+        String sql = "insert into link (url, checked_date) values (?, now()) on conflict do nothing";
+        jdbcOperations.update(sql, url.toString());
+        return findByUrl(url);
     }
 
-    public void remove(Long id) {
-        String sql = "delete from link where link_id = ?";
-        jdbcOperations.update(sql, id);
+    public void remove(URI url) {
+        String sql = "delete from link where url = ?";
+        jdbcOperations.update(sql, url.toString());
     }
 }
