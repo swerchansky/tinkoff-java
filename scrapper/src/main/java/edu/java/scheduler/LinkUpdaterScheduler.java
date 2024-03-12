@@ -53,7 +53,7 @@ public class LinkUpdaterScheduler {
                         onStackOverflowSuccessResponse(url, chatIds),
                         onError(link)
                     );
-                default -> onError(link).accept(new IllegalArgumentException("Unsupported link type"));
+                case null, default -> onError(link).accept(new IllegalArgumentException("Unsupported link type"));
             }
         });
         linkUpdater.updateCheckedDate(oldLinks);
@@ -78,7 +78,7 @@ public class LinkUpdaterScheduler {
     ) {
         return question -> {
             LinkUpdateRequest request =
-                new LinkUpdateRequest(url, question.questions.getFirst().title, chatIds);
+                new LinkUpdateRequest(url, question.questions.getFirst().getTitle(), chatIds);
             botClient.update(request).subscribe();
         };
     }

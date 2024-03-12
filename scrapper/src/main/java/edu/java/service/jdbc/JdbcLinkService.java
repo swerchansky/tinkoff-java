@@ -18,9 +18,14 @@ import java.util.List;
 public class JdbcLinkService implements LinkService {
     private final LinkChatRepository linkChatRepository;
     private final LinkRepository linkRepository;
+    private final ChatRepository chatRepository;
 
     @Override
     public Link add(URI url, Long chatId) {
+        Chat chat = chatRepository.findById(chatId);
+        if (chat == null) {
+            chatRepository.add(chatId);
+        }
         Link link = linkRepository.add(url);
         linkChatRepository.add(url, chatId);
         return link;

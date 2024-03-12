@@ -1,12 +1,13 @@
 package edu.java.domain.repository;
 
 import edu.java.domain.dto.Link;
+import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
-import java.net.URI;
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -15,8 +16,12 @@ public class LinkRepository {
     private final RowMapper<Link> linkRowMapper;
 
     public Link findByUrl(URI url) {
-        String sql = "select * from link where url = ?";
-        return jdbcOperations.queryForObject(sql, linkRowMapper, url.toString());
+        try {
+            String sql = "select * from link where url = ?";
+            return jdbcOperations.queryForObject(sql, linkRowMapper, url.toString());
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public List<Link> findAll() {

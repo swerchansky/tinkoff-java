@@ -4,6 +4,7 @@ import edu.java.domain.dto.LinkChat;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -15,8 +16,12 @@ public class LinkChatRepository {
     private final RowMapper<LinkChat> linkChatRowMapper;
 
     public LinkChat find(URI url, Long chatId) {
-        String sql = "select * from link_chat join link using (url) where url = ? and chat_id = ?";
-        return jdbcOperations.queryForObject(sql, linkChatRowMapper, url.toString(), chatId);
+        try {
+            String sql = "select * from link_chat join link using (url) where url = ? and chat_id = ?";
+            return jdbcOperations.queryForObject(sql, linkChatRowMapper, url.toString(), chatId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public List<LinkChat> findByUrl(URI url) {

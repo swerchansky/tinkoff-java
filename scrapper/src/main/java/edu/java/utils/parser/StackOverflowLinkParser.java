@@ -8,8 +8,8 @@ public final class StackOverflowLinkParser implements LinkParser {
     @Override
     public linkParserResult parseLink(URI url) {
         String[] pathParts = url.getPath().split("/");
-        return (pathParts.length >= 2 && "questions".equals(pathParts[0]))
-            ? new StackOverflowlinkParserResult(Long.parseLong(pathParts[1]))
+        return (pathParts.length >= 2 && "questions".equals(pathParts[1]))
+            ? new StackOverflowlinkParserResult(Long.parseLong(pathParts[2]))
             : null;
     }
 }

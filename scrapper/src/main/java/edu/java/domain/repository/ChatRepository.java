@@ -3,6 +3,7 @@ package edu.java.domain.repository;
 import edu.java.domain.dto.Chat;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,8 +15,12 @@ public class ChatRepository {
     private final RowMapper<Chat> chatRowMapper;
 
     public Chat findById(Long chatId) {
-        String sql = "select chat_id from chat where chat_id = ?";
-        return jdbcOperations.queryForObject(sql, chatRowMapper, chatId);
+        try {
+            String sql = "select chat_id from chat where chat_id = ?";
+            return jdbcOperations.queryForObject(sql, chatRowMapper, chatId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
     public List<Chat> findAll() {
