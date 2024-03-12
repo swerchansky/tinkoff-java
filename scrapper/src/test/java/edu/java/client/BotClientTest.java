@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BotClientTest {
     private final BotClient botClient = new BotClient(WebClient.create("http://localhost:8029"));
     private final LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
-        1,
         URI.create("https://www.google.com"),
         "",
         List.of()

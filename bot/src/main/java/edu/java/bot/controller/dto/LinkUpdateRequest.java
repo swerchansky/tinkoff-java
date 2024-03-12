@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class LinkUpdateRequest {
-    public long id;
     public URI url;
     public String description;
     public List<Long> tgChatIds;
