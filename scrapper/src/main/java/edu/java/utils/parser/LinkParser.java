@@ -1,12 +1,12 @@
 package edu.java.utils.parser;
 
-import edu.java.utils.parser.result.linkParserResult;
+import edu.java.utils.parser.result.LinkParserResult;
 import java.net.URI;
 
 public sealed interface LinkParser permits GithubLinkParser, StackOverflowLinkParser, EmptyLinkParser {
-    linkParserResult parseLink(URI url);
+    LinkParserResult parseLink(URI url);
 
-    static linkParserResult parseLinkInfo(URI url) {
+    static LinkParserResult parseLinkInfo(URI url) {
         String host = url.getHost();
         LinkParser parser;
         if (host.contains("github")) {

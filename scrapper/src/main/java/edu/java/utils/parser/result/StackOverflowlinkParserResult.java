@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class StackOverflowlinkParserResult implements linkParserResult {
+public class StackOverflowlinkParserResult implements LinkParserResult {
     private Long id;
 }

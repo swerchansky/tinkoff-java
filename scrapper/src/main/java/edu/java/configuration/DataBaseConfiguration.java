@@ -18,14 +18,20 @@ import static java.time.OffsetDateTime.ofInstant;
 
 @Configuration
 public class DataBaseConfiguration {
+    private static final String USERNAME_PASSWORD = "postgres";
+    private static final String CHECKED_DATE_COLUMN = "checked_date";
+    private static final String CHAT_ID_COLUMN = "chat_id";
+    private static final String URL_COLUMN = "url";
+    private static final String TIMEZONE = "UTC";
+
     @Value("${spring.datasource.url}")
     private static String url = "jdbc:postgresql://localhost:5432/scrapper";
 
     @Value("${spring.datasource.username}")
-    private static String username = "postgres";
+    private static String username = USERNAME_PASSWORD;
 
     @Value("${spring.datasource.password}")
-    private static String password = "postgres";
+    private static String password = USERNAME_PASSWORD;
 
     @Value("${spring.datasource.driver-class-name}")
     private static String driver = "org.postgresql.Driver";
@@ -47,7 +53,7 @@ public class DataBaseConfiguration {
 
     @Bean
     public RowMapper<Chat> chatRowMapper() {
-        return (rs, rowNum) -> new Chat(rs.getLong("chat_id"));
+        return (rs, rowNum) -> new Chat(rs.getLong(CHAT_ID_COLUMN));
     }
 
     @Bean
@@ -55,8 +61,8 @@ public class DataBaseConfiguration {
         return (rs, rowNum) -> {
             try {
                 return new Link(
-                    new URI(rs.getString("url")),
-                    ofInstant(rs.getTimestamp("checked_date").toInstant(), ZoneId.of("UTC"))
+                    new URI(rs.getString(URL_COLUMN)),
+                    ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN).toInstant(), ZoneId.of(TIMEZONE))
                 );
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
@@ -70,10 +76,10 @@ public class DataBaseConfiguration {
             try {
                 return new LinkChat(
                     new Link(
-                        new URI(rs.getString("url")),
-                        ofInstant(rs.getTimestamp("checked_date").toInstant(), ZoneId.of("UTC"))
+                        new URI(rs.getString(URL_COLUMN)),
+                        ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN).toInstant(), ZoneId.of(TIMEZONE))
                     ),
-                    new Chat(rs.getLong("chat_id"))
+                    new Chat(rs.getLong(CHAT_ID_COLUMN))
                 );
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);

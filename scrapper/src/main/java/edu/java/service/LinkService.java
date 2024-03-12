@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface LinkService {
     Link add(URI url, Long chatId);
+
     void remove(URI url, Long chatId);
+
     List<Chat> findChats(URI url);
+
     List<Link> findLinks(Long chatId);
 }

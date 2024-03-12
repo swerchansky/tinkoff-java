@@ -5,5 +5,6 @@ import java.util.List;
 
 public interface LinkUpdater {
     void updateCheckedDate(List<Link> links);
+
     List<Link> getOldLinks();
 }
