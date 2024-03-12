@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Link {
-    public URI url;
-    public OffsetDateTime checkedDate;
+    private URI url;
+    private OffsetDateTime checkedDate;
 }

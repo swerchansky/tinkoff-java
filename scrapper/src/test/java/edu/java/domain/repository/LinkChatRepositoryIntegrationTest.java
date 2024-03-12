@@ -54,8 +54,8 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link chat")
     public void remove() {
-        Link link = linkRepository.add(URL);
-        Chat chat = chatRepository.add(1L);
+        linkRepository.add(URL);
+        chatRepository.add(1L);
         linkChatRepository.add(URL, 1L);
         linkChatRepository.remove(URL, 1L);
         List<LinkChat> actualLinkChats = linkChatRepository.findAll();

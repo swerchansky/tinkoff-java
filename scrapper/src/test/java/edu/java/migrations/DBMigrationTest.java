@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class DBMigrationTest extends IntegrationEnvironment {
     private static Statement statement;
-    private final String SQL_INSERT = "INSERT INTO link (url,checked_date) VALUES ('http://google.com', now())";
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -31,7 +30,8 @@ public class DBMigrationTest extends IntegrationEnvironment {
     @Test
     @DisplayName("Insert link")
     public void insertTest() throws SQLException {
-        int result = statement.executeUpdate(SQL_INSERT);
+        String sql = "INSERT INTO link (url,checked_date) VALUES ('http://google.com', now())";
+        int result = statement.executeUpdate(sql);
         assertThat(result).isEqualTo(1);
     }
 }

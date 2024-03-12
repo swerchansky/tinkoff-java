@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Chat {
-    public long chatId;
+    private long chatId;
 }
