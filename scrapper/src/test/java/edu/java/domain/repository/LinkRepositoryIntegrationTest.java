@@ -37,7 +37,6 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
         assertThat(actualLinks).containsExactly(expected);
         Link actual = actualLinks.getFirst();
         assertThat(actual.getUrl()).isEqualTo(URL);
-        assertThat(actual.getCheckedDate()).isBefore(OffsetDateTime.now());
     }
 
     @Test

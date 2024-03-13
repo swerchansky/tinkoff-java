@@ -19,6 +19,8 @@ public class StackOverflowQuestionsResponse {
 
     @Data
     @EqualsAndHashCode(callSuper = false)
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class QuestionResponse {
         public String owner;
         @JsonProperty("title")

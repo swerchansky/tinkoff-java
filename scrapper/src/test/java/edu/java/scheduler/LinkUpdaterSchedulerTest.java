@@ -64,7 +64,7 @@ public class LinkUpdaterSchedulerTest {
         when(githubClient.getRepositoryInfo(
             anyString(),
             anyString()
-        )).thenReturn(Mono.just(new GithubRepositoryResponse()));
+        )).thenReturn(Mono.just(new GithubRepositoryResponse("", "", now())));
 
         linkUpdaterScheduler.update();
         verify(botClient, times(1)).update(any());
@@ -83,7 +83,7 @@ public class LinkUpdaterSchedulerTest {
         ));
         when(stackOverflowClient.getQuestionInfo(anyLong()))
             .thenReturn(Mono.just(new StackOverflowQuestionsResponse(List.of(
-                new StackOverflowQuestionsResponse.QuestionResponse()
+                new StackOverflowQuestionsResponse.QuestionResponse("", "", now())
             ))));
 
         linkUpdaterScheduler.update();
