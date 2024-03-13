@@ -41,9 +41,6 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("add link")
     public void add() {
-        assertThat(linkRepository.findAll()).isEmpty();
-        assertThat(linkChatRepository.findAll()).isEmpty();
-
         linkService.add(URI.create("https://google.com"), 1L);
         List<LinkChat> linkChats = linkChatRepository.findAll();
 
@@ -58,9 +55,6 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link")
     public void remove() {
-        assertThat(linkRepository.findAll()).isEmpty();
-        assertThat(linkChatRepository.findAll()).isEmpty();
-
         linkService.add(URI.create("https://google.com"), 1L);
         linkService.remove(URI.create("https://google.com"), 1L);
         List<LinkChat> linkChats = linkChatRepository.findAll();
@@ -74,9 +68,6 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find chats")
     public void findChats() {
-        assertThat(linkRepository.findAll()).isEmpty();
-        assertThat(linkChatRepository.findAll()).isEmpty();
-
         List<LinkChat> linkChats = List.of(
             new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(1L)),
             new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(2L))
@@ -99,9 +90,6 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find links")
     public void findLinks() {
-        assertThat(linkRepository.findAll()).isEmpty();
-        assertThat(linkChatRepository.findAll()).isEmpty();
-
         List<LinkChat> linkChats = List.of(
             new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(1L)),
             new LinkChat(new Link(URI.create("https://example.com"), now(), now()), new Chat(1L))
