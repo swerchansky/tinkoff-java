@@ -3,6 +3,7 @@ package edu.java.bot.command;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public String execute(List<String> arguments) {
+    public Mono<String> execute(Long chatId, List<String> arguments) {
         StringBuilder helpMessage = new StringBuilder();
         helpMessage.append("*Available commands:*").append(System.lineSeparator());
         commands.forEach(command ->
@@ -29,6 +30,6 @@ public class HelpCommand implements Command {
                 .append(command.getDescription())
                 .append(System.lineSeparator())
         );
-        return helpMessage.toString();
+        return Mono.just(helpMessage.toString());
     }
 }

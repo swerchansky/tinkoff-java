@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import reactor.core.publisher.Mono;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
@@ -91,7 +92,7 @@ class BotUpdatesListenerTest {
         when(commands.stream()).thenReturn(stream);
         when(stream.filter(any())).thenReturn(stream);
         when(stream.findFirst()).thenReturn(commandOptional == null ? Optional.empty() : Optional.of(commandOptional));
-        when(command.execute(List.of())).thenReturn(commandResponse);
+        when(command.execute(123L, List.of())).thenReturn(Mono.just(commandResponse));
     }
 
     private void verifyExecution(String expectedResponse) {

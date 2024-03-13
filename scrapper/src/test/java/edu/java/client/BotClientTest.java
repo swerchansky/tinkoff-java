@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BotClientTest {
     private final BotClient botClient = new BotClient(WebClient.create("http://localhost:8029"));
     private final LinkUpdateRequest linkUpdateRequest = new LinkUpdateRequest(
-        1,
         URI.create("https://www.google.com"),
         "",
         List.of()
@@ -29,7 +28,7 @@ class BotClientTest {
     @Test
     @DisplayName("update link successfully")
     void updateLinkSuccessfully() {
-        stubFor(WireMock.post("/updates")
+        stubFor(WireMock.post("/update")
             .willReturn(aResponse().withStatus(HttpStatus.OK.value())));
 
         StepVerifier.create(botClient.update(linkUpdateRequest))
@@ -40,7 +39,7 @@ class BotClientTest {
     @Test
     @DisplayName("Should throw ApiErrorException when API call fails")
     void updateLinkApiError() {
-        stubFor(WireMock.post("/updates")
+        stubFor(WireMock.post("/update")
             .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("{\"description\":\"Invalid request\",\"code\":\"400\",\"exceptionMessage\":\"Invalid link\"}")));
@@ -50,8 +49,6 @@ class BotClientTest {
                 assertThat(throwable)
                     .isInstanceOf(ApiErrorException.class)
                     .hasMessageContaining("Invalid request")
-                    .hasMessageContaining("400")
-                    .hasMessageContaining("Invalid link")
             ).verify();
     }
 }

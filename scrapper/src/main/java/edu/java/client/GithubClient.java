@@ -18,10 +18,7 @@ public class GithubClient {
             .retrieve()
             .onStatus(
                 status -> status.is4xxClientError() || status.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiErrorException(
-                    "Github API error",
-                    clientResponse.statusCode().value()
-                ))
+                clientResponse -> Mono.error(new ApiErrorException("Github API error"))
             )
             .bodyToMono(GithubRepositoryResponse.class);
     }

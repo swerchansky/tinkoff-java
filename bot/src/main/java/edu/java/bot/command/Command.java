@@ -2,13 +2,14 @@ package edu.java.bot.command;
 
 import com.pengrad.telegrambot.model.BotCommand;
 import java.util.List;
+import reactor.core.publisher.Mono;
 
 public interface Command {
     String getCommandName();
 
     String getDescription();
 
-    String execute(List<String> arguments);
+    Mono<String> execute(Long chatId, List<String> arguments);
 
     default boolean isApplicable(String command) {
         return getCommandName().equals(command);

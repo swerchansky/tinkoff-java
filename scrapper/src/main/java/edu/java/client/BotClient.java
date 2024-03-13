@@ -17,7 +17,7 @@ public class BotClient {
 
     public Mono<Void> update(LinkUpdateRequest linkUpdateRequest) {
         return botWebClient.post()
-            .uri("/updates")
+            .uri("/update")
             .bodyValue(linkUpdateRequest)
             .retrieve()
             .onStatus(this::isApiError, this::handleApiError)
@@ -26,12 +26,7 @@ public class BotClient {
 
     private Mono<ApiErrorException> handleApiError(ClientResponse clientResponse) {
         return clientResponse.bodyToMono(ApiErrorResponse.class)
-            .map(apiErrorResponse ->
-                new ApiErrorException(
-                    apiErrorResponse.description + ": " + apiErrorResponse.exceptionMessage,
-                    Integer.parseInt(apiErrorResponse.code)
-                )
-            );
+            .map(apiErrorResponse -> new ApiErrorException(apiErrorResponse.description));
     }
 
     private boolean isApiError(HttpStatusCode code) {

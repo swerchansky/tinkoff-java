@@ -3,7 +3,6 @@ package edu.java.bot.controller;
 import edu.java.bot.controller.dto.ApiErrorResponse;
 import edu.java.bot.controller.dto.LinkUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,7 +20,6 @@ public interface BotController {
     @PostMapping(value = "/update")
     void update(
         @RequestBody
-        @Parameter(name = "LinkUpdateRequest", required = true)
         LinkUpdateRequest request
     );
 }

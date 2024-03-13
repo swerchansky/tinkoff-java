@@ -24,11 +24,11 @@ public class ScrapperClient {
     private final WebClient scrapperWebClient;
 
     public Mono<Void> registerChat(long id) {
-        return sendChatRequest(HttpMethod.POST, id);
-    }
-
-    public Mono<Void> deleteChat(long id) {
-        return sendChatRequest(HttpMethod.DELETE, id);
+        return scrapperWebClient.post()
+            .uri(CHAT_ENDPOINT, id)
+            .retrieve()
+            .onStatus(this::isApiError, this::handleApiError)
+            .bodyToMono(Void.class);
     }
 
     public Mono<ListLinksResponse> getLinks(long id) {
@@ -40,20 +40,12 @@ public class ScrapperClient {
             .bodyToMono(ListLinksResponse.class);
     }
 
-    public Mono<LinkResponse> addLink(long id, String url) {
-        return sendLinkRequestWithBody(HttpMethod.POST, id, new AddLinkRequest(URI.create(url)));
+    public Mono<LinkResponse> addLink(long id, URI url) {
+        return sendLinkRequestWithBody(HttpMethod.POST, id, new AddLinkRequest(url));
     }
 
-    public Mono<LinkResponse> deleteLink(long id, String url) {
-        return sendLinkRequestWithBody(HttpMethod.DELETE, id, new RemoveLinkRequest(URI.create(url)));
-    }
-
-    private Mono<Void> sendChatRequest(HttpMethod method, long id) {
-        return scrapperWebClient.method(method)
-            .uri(CHAT_ENDPOINT, id)
-            .retrieve()
-            .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(Void.class);
+    public Mono<LinkResponse> deleteLink(long id, URI url) {
+        return sendLinkRequestWithBody(HttpMethod.DELETE, id, new RemoveLinkRequest(url));
     }
 
     private Mono<LinkResponse> sendLinkRequestWithBody(HttpMethod method, long id, Object requestBody) {
@@ -68,12 +60,7 @@ public class ScrapperClient {
 
     private Mono<ApiErrorException> handleApiError(ClientResponse clientResponse) {
         return clientResponse.bodyToMono(ApiErrorResponse.class)
-            .map(apiErrorResponse ->
-                new ApiErrorException(
-                    apiErrorResponse.description + ": " + apiErrorResponse.exceptionMessage,
-                    Integer.parseInt(apiErrorResponse.code)
-                )
-            );
+            .map(apiErrorResponse -> new ApiErrorException(apiErrorResponse.description));
     }
 
     private boolean isApiError(HttpStatusCode code) {

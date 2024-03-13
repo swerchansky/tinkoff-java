@@ -34,7 +34,7 @@ class HelpCommandTest {
         when(mockCommand2.getCommandName()).thenReturn("/command2");
         when(mockCommand2.getDescription()).thenReturn("description2");
 
-        String result = helpCommand.execute(Collections.emptyList());
+        String result = helpCommand.execute(1L, Collections.emptyList()).block();
 
         assertThat(result).contains("/command1 - description1", "/command2 - description2");
     }
