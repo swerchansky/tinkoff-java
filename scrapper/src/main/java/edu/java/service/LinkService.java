@@ -10,6 +10,8 @@ public interface LinkService {
 
     void remove(URI url, Long chatId);
 
+    Link findLink(URI url);
+
     List<Chat> findChats(URI url);
 
     List<Link> findLinks(Long chatId);

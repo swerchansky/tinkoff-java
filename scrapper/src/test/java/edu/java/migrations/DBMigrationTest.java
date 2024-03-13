@@ -30,7 +30,7 @@ public class DBMigrationTest extends IntegrationEnvironment {
     @Test
     @DisplayName("Insert link")
     public void insertTest() throws SQLException {
-        String sql = "INSERT INTO link (url,checked_date) VALUES ('http://google.com', now())";
+        String sql = "INSERT INTO link (url,updated_date,checked_date) VALUES ('http://google.com', now(), now())";
         int result = statement.executeUpdate(sql);
         assertThat(result).isEqualTo(1);
     }

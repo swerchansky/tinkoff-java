@@ -14,6 +14,7 @@ import edu.java.utils.parser.LinkParser;
 import edu.java.utils.parser.result.GithubLinkParserResult;
 import edu.java.utils.parser.result.StackOverflowlinkParserResult;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +66,11 @@ public class LinkUpdaterScheduler {
 
     private Consumer<GithubRepositoryResponse> onGithubSuccessResponse(URI url, List<Long> chatIds) {
         return repository -> {
-            LinkUpdateRequest request = new LinkUpdateRequest(url, repository.getName(), chatIds);
-            botClient.update(request).subscribe();
+            if (!repository.getUpdatedAt().isEqual(linkService.findLink(url).getUpdatedDate())) {
+                linkUpdater.updateUpdatedDate(linkService.findLink(url), repository.getUpdatedAt());
+                LinkUpdateRequest request = new LinkUpdateRequest(url, repository.getName(), chatIds);
+                botClient.update(request).subscribe();
+            }
         };
     }
 
@@ -75,9 +79,13 @@ public class LinkUpdaterScheduler {
         List<Long> chatIds
     ) {
         return question -> {
-            LinkUpdateRequest request =
-                new LinkUpdateRequest(url, question.questions.getFirst().getTitle(), chatIds);
-            botClient.update(request).subscribe();
+            OffsetDateTime currentUpdatedDate = question.getQuestions().getFirst().getUpdatedAt();
+            if (!currentUpdatedDate.isEqual(linkService.findLink(url).getUpdatedDate())) {
+                linkUpdater.updateUpdatedDate(linkService.findLink(url), currentUpdatedDate);
+                LinkUpdateRequest request =
+                    new LinkUpdateRequest(url, question.questions.getFirst().getTitle(), chatIds);
+                botClient.update(request).subscribe();
+            }
         };
     }
 }

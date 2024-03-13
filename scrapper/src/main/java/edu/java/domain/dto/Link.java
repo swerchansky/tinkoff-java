@@ -9,5 +9,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class Link {
     private URI url;
+    private OffsetDateTime updatedDate;
     private OffsetDateTime checkedDate;
 }

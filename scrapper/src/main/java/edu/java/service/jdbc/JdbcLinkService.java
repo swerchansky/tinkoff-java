@@ -39,6 +39,11 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
+    public Link findLink(URI url) {
+        return linkRepository.findByUrl(url);
+    }
+
+    @Override
     public List<Chat> findChats(URI url) {
         List<LinkChat> linkChats = linkChatRepository.findByUrl(url);
         return linkChats.stream().map(LinkChat::getChat).toList();

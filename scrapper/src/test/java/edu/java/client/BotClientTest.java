@@ -28,7 +28,7 @@ class BotClientTest {
     @Test
     @DisplayName("update link successfully")
     void updateLinkSuccessfully() {
-        stubFor(WireMock.post("/updates")
+        stubFor(WireMock.post("/update")
             .willReturn(aResponse().withStatus(HttpStatus.OK.value())));
 
         StepVerifier.create(botClient.update(linkUpdateRequest))
@@ -39,7 +39,7 @@ class BotClientTest {
     @Test
     @DisplayName("Should throw ApiErrorException when API call fails")
     void updateLinkApiError() {
-        stubFor(WireMock.post("/updates")
+        stubFor(WireMock.post("/update")
             .willReturn(aResponse().withStatus(HttpStatus.BAD_REQUEST.value())
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("{\"description\":\"Invalid request\",\"code\":\"400\",\"exceptionMessage\":\"Invalid link\"}")));

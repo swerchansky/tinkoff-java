@@ -4,5 +4,6 @@
 create table if not exists link
 (
     url          text primary key,
-    checked_date timestamp not null
+    updated_date timestamp without time zone not null,
+    checked_date timestamp without time zone not null
 );

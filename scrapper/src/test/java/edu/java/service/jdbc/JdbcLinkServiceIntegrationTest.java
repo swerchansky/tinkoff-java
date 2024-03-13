@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
+import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(classes = {
@@ -78,8 +80,8 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         assertThat(linkChatRepository.findAll()).isEmpty();
 
         List<LinkChat> linkChats = List.of(
-            new LinkChat(new Link(URI.create("https://google.com"), OffsetDateTime.now()), new Chat(1L)),
-            new LinkChat(new Link(URI.create("https://google.com"), OffsetDateTime.now()), new Chat(2L))
+            new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(1L)),
+            new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(2L))
         );
 
         linkChats.forEach(linkChat -> linkService.add(
@@ -103,8 +105,8 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         assertThat(linkChatRepository.findAll()).isEmpty();
 
         List<LinkChat> linkChats = List.of(
-            new LinkChat(new Link(URI.create("https://google.com"), OffsetDateTime.now()), new Chat(1L)),
-            new LinkChat(new Link(URI.create("https://example.com"), OffsetDateTime.now()), new Chat(1L))
+            new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(1L)),
+            new LinkChat(new Link(URI.create("https://example.com"), now(), now()), new Chat(1L))
         );
 
         linkChats.forEach(linkChat -> linkService.add(

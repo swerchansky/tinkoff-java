@@ -5,7 +5,9 @@ import edu.java.domain.dto.Link;
 import edu.java.domain.dto.LinkChat;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -14,15 +16,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import static java.time.OffsetDateTime.ofInstant;
 
 @Configuration
 public class DataBaseConfiguration {
     private static final String USERNAME_PASSWORD = "postgres";
     private static final String CHECKED_DATE_COLUMN = "checked_date";
+    private static final String UPDATED_DATE_COLUMN = "updated_date";
     private static final String CHAT_ID_COLUMN = "chat_id";
     private static final String URL_COLUMN = "url";
-    private static final String TIMEZONE = "UTC";
+    private static final String TIMEZONE = "Z";
 
     @Value("${spring.datasource.url}")
     private static String url = "jdbc:postgresql://localhost:5432/scrapper";
@@ -62,7 +64,8 @@ public class DataBaseConfiguration {
             try {
                 return new Link(
                     new URI(rs.getString(URL_COLUMN)),
-                    ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN).toInstant(), ZoneId.of(TIMEZONE))
+                    ofInstant(rs.getTimestamp(UPDATED_DATE_COLUMN)),
+                    ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN))
                 );
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
@@ -77,7 +80,8 @@ public class DataBaseConfiguration {
                 return new LinkChat(
                     new Link(
                         new URI(rs.getString(URL_COLUMN)),
-                        ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN).toInstant(), ZoneId.of(TIMEZONE))
+                        ofInstant(rs.getTimestamp(UPDATED_DATE_COLUMN)),
+                        ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN))
                     ),
                     new Chat(rs.getLong(CHAT_ID_COLUMN))
                 );
@@ -85,5 +89,10 @@ public class DataBaseConfiguration {
                 throw new RuntimeException(e);
             }
         };
+    }
+
+    private OffsetDateTime ofInstant(java.sql.Timestamp timestamp) {
+        LocalDateTime localDateTime = timestamp.toLocalDateTime();
+        return OffsetDateTime.of(localDateTime, ZoneOffset.of(TIMEZONE));
     }
 }
