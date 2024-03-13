@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScrapperControllerImpl implements ScrapperController {
     private final LinkService linkService;
     private final ChatService chatService;
-    private static final LinkResponse LINK_RESPONSE_STUB = new LinkResponse(URI.create("https://www.google.com"));
 
     @Override
     public void addChat(long id) {
