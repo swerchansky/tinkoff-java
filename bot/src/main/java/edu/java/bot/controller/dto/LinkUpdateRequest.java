@@ -1,8 +1,8 @@
 package edu.java.bot.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.net.URI;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

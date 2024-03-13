@@ -1,8 +1,8 @@
 package edu.java.bot.command;
 
 import com.pengrad.telegrambot.model.BotCommand;
-import reactor.core.publisher.Mono;
 import java.util.List;
+import reactor.core.publisher.Mono;
 
 public interface Command {
     String getCommandName();

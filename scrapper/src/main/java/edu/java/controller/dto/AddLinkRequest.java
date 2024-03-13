@@ -1,7 +1,7 @@
 package edu.java.controller.dto;
 
-import java.net.URI;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.net.URI;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
