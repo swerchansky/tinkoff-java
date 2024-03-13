@@ -83,11 +83,11 @@ public class LinkUpdaterSchedulerTest {
         ));
         when(stackOverflowClient.getQuestionInfo(anyLong()))
             .thenReturn(Mono.just(new StackOverflowQuestionsResponse(List.of(
-                new StackOverflowQuestionsResponse.QuestionResponse("", "", now())
+                new StackOverflowQuestionsResponse.QuestionResponse("", "", now().minusDays(1))
             ))));
 
         linkUpdaterScheduler.update();
-        verify(botClient, times(1)).update(any());
+        verify(botClient).update(any());
     }
 
     @Test

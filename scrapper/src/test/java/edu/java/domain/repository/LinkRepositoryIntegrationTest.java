@@ -50,4 +50,26 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
         List<Link> actualLinks = linkRepository.findAll();
         assertThat(actualLinks).isEmpty();
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("find by url")
+    public void findByUrl() {
+        linkRepository.add(URL, OffsetDateTime.now());
+        Link actual = linkRepository.findByUrl(URL);
+
+        assertThat(actual).isNotNull();
+        assertThat(actual.getUrl()).isEqualTo(URL);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("find by unknown url")
+    public void findByUnknownUrl() {
+        Link actual = linkRepository.findByUrl(URL);
+
+        assertThat(actual).isNull();
+    }
 }

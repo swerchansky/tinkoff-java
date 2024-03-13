@@ -63,4 +63,14 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
 
         assertThat(actualLinkChats).isEmpty();
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("find link chat by unknown url and chat id")
+    public void findUnknown() {
+        LinkChat actual = linkChatRepository.find(URL, 1L);
+
+        assertThat(actual).isNull();
+    }
 }

@@ -6,9 +6,10 @@ import java.net.URI;
 
 public final class StackOverflowLinkParser implements LinkParser {
     @Override
+    @SuppressWarnings("MagicNumber")
     public LinkParserResult parseLink(URI url) {
         String[] pathParts = url.getPath().split("/");
-        if (pathParts.length >= 2 && "questions".equals(pathParts[1])) {
+        if (pathParts.length >= 3 && "questions".equals(pathParts[1])) {
             String urlString = url.toString();
             String questionId = pathParts[2];
             URI newUrl = URI.create(urlString.substring(0, urlString.indexOf(questionId) + questionId.length()));

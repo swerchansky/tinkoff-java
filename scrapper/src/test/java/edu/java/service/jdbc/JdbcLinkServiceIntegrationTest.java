@@ -109,4 +109,29 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         assertThat(links.stream().map(Link::getUrl).toList())
             .containsAll(linkChats.stream().map(LinkChat::getLink).map(Link::getUrl).toList());
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("find link")
+    public void findLink() {
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
+        Link link = linkService.findLink(URI.create("https://google.com"));
+
+        assertThat(link).isNotNull();
+        assertThat(link.getUrl()).isEqualTo(URI.create("https://google.com"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    @DisplayName("find link with id")
+    public void findLinkWithId() {
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
+        LinkChat linkChat = linkService.findLinkWithId(URI.create("https://google.com"), 1L);
+
+        assertThat(linkChat).isNotNull();
+        assertThat(linkChat.getLink().getUrl()).isEqualTo(URI.create("https://google.com"));
+        assertThat(linkChat.getChat().getChatId()).isEqualTo(1L);
+    }
 }
