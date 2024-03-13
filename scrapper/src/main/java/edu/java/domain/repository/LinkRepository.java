@@ -30,7 +30,7 @@ public class LinkRepository {
     }
 
     public List<Link> findOld() {
-        String sql = "select * from link where checked_date < now() - interval '5 minutes'";
+        String sql = "select * from link where checked_date < now() - interval '10 seconds'";
         return jdbcOperations.query(sql, linkRowMapper);
     }
 

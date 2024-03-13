@@ -37,11 +37,14 @@ public class BotUpdatesListener implements UpdatesListener {
             .filter(command -> command.isApplicable(commandArguments.commandName))
             .findFirst()
             .ifPresentOrElse(
-                command -> {
-                    String responseText = command.execute(commandArguments.arguments);
-                    SendMessage sendMessage = new SendMessage(chatId, responseText).parseMode(ParseMode.Markdown);
-                    telegramBot.execute(sendMessage);
-                },
+                command -> command.execute(chatId, commandArguments.arguments).subscribe(
+                    responseText -> {
+                        SendMessage sendMessage =
+                            new SendMessage(chatId, responseText).parseMode(ParseMode.Markdown);
+                        telegramBot.execute(sendMessage);
+                    },
+                    error -> log.error("Error while executing command", error)
+                ),
                 () -> telegramBot.execute(new SendMessage(chatId, "Unknown command"))
             );
     }

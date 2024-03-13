@@ -13,7 +13,7 @@ public class BotControllerImpl implements BotController {
     private final TelegramBot telegramBot;
 
     @Override
-    public void update(@RequestBody LinkUpdateRequest request) {
+    public void update(LinkUpdateRequest request) {
         String messageText = "Link " + request.url + " has been updated: " + request.description;
         request.tgChatIds.stream().map(chatId -> new SendMessage(chatId, messageText)).forEach(telegramBot::execute);
     }

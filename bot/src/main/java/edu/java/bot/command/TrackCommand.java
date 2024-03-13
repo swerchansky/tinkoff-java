@@ -1,10 +1,16 @@
 package edu.java.bot.command;
 
+import edu.java.bot.client.ScrapperClient;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
 public class TrackCommand implements Command {
+    private final ScrapperClient scrapperClient;
+
     @Override
     public String getCommandName() {
         return "/track";
@@ -16,13 +22,15 @@ public class TrackCommand implements Command {
     }
 
     @Override
-    public String execute(List<String> arguments) {
+    public Mono<String> execute(Long chatId, List<String> arguments) {
         if (arguments.size() != 1) {
-            return """
+            return Mono.just("""
                 To start tracking a link, use the /track command followed by the link
                 Example: /track https://www.google.com
-                """;
+                """);
         }
-        return "This command is not implemented yet";
+        return scrapperClient.addLink(chatId, arguments.getFirst())
+            .map(linkResponse -> "Link " + linkResponse.url + " successfully added for tracking")
+            .onErrorResume(error -> Mono.just(error.getMessage()));
     }
 }

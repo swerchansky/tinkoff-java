@@ -9,6 +9,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 public class LinkResponse {
-    public long id;
     public URI url;
 }

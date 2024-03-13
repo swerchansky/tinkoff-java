@@ -6,17 +6,25 @@ import edu.java.controller.dto.ListLinksResponse;
 import edu.java.controller.dto.RemoveLinkRequest;
 import java.net.URI;
 import java.util.List;
+import edu.java.domain.dto.Link;
+import edu.java.service.ChatService;
+import edu.java.service.LinkService;
+import edu.java.utils.parser.LinkParser;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class ScrapperControllerImpl implements ScrapperController {
-    private static final LinkResponse LINK_RESPONSE_STUB = new LinkResponse(2, URI.create("https://www.google.com"));
+    private final LinkService linkService;
+    private final ChatService chatService;
+    private static final LinkResponse LINK_RESPONSE_STUB = new LinkResponse(URI.create("https://www.google.com"));
 
     @Override
     public void addChat(long id) {
-        //stub
+        chatService.register(id);
     }
 
     @Override
@@ -26,19 +34,24 @@ public class ScrapperControllerImpl implements ScrapperController {
 
     @Override
     public ListLinksResponse getLinks(long id) {
-        //stub
-        return new ListLinksResponse(List.of(LINK_RESPONSE_STUB), 1);
+        List<Link> links = linkService.findLinks(id);
+        List<LinkResponse> linkResponses = links.stream().map(link -> new LinkResponse(link.getUrl())).toList();
+        return new ListLinksResponse(linkResponses, linkResponses.size());
     }
 
     @Override
     public LinkResponse addLink(long id, AddLinkRequest link) {
-        //stub
-        return LINK_RESPONSE_STUB;
+        URI url = link.getLink();
+        if (LinkParser.parseLinkInfo(url) == null) {
+            throw new IllegalArgumentException("Invalid link");
+        }
+        linkService.add(url, id);
+        return new LinkResponse(url);
     }
 
     @Override
     public LinkResponse deleteLink(long id, RemoveLinkRequest link) {
-        //stub
-        return LINK_RESPONSE_STUB;
+        linkService.remove(link.link, id);
+        return new LinkResponse(link.link);
     }
 }

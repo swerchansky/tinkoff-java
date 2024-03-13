@@ -31,7 +31,7 @@ class JdbcLinkUpdaterIntegrationTest extends IntegrationEnvironment {
     @Transactional
     @Rollback
     @DisplayName("update checked date")
-    void updateCheckedDate() throws InterruptedException {
+    void updateCheckedDate() {
         Link link = linkRepository.add(URI.create("https://google.com"));
 
         linkUpdater.updateCheckedDate(List.of(link));

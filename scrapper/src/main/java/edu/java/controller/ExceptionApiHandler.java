@@ -16,6 +16,12 @@ public class ExceptionApiHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiErrorResponse> handleValidationException(IllegalArgumentException exception) {
+        ApiErrorResponse response = createErrorResponse(exception, "400", "Link not supported");
+        return ResponseEntity.badRequest().body(response);
+    }
+
     private ApiErrorResponse createErrorResponse(Exception exception, String code, String description) {
         return new ApiErrorResponse(
                 description,

@@ -21,7 +21,6 @@ public interface BotController {
     @PostMapping(value = "/update")
     void update(
         @RequestBody
-        @Parameter(name = "LinkUpdateRequest", required = true)
         LinkUpdateRequest request
     );
 }

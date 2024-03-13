@@ -17,7 +17,7 @@ public class BotClient {
 
     public Mono<Void> update(LinkUpdateRequest linkUpdateRequest) {
         return botWebClient.post()
-            .uri("/updates")
+            .uri("/update")
             .bodyValue(linkUpdateRequest)
             .retrieve()
             .onStatus(this::isApiError, this::handleApiError)

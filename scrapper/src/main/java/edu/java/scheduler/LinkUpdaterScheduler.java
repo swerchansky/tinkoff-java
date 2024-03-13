@@ -60,9 +60,7 @@ public class LinkUpdaterScheduler {
     }
 
     private static Consumer<Throwable> onError(Link link) {
-        return throwable -> {
-            log.error("Error while updating link: " + link.getUrl(), throwable);
-        };
+        return throwable -> log.error("Error while updating link: " + link.getUrl(), throwable);
     }
 
     private Consumer<GithubRepositoryResponse> onGithubSuccessResponse(URI url, List<Long> chatIds) {
