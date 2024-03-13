@@ -30,7 +30,7 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("add link")
     public void add() {
-        Link expected = linkRepository.add(URL);
+        Link expected = linkRepository.add(URL, OffsetDateTime.now());
         List<Link> actualLinks = linkRepository.findAll();
 
         assertThat(actualLinks).hasSize(1);
@@ -44,7 +44,7 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link")
     public void remove() {
-        linkRepository.add(URL);
+        linkRepository.add(URL, OffsetDateTime.now());
         linkRepository.remove(URL);
 
         List<Link> actualLinks = linkRepository.findAll();

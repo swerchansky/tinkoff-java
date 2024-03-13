@@ -7,6 +7,7 @@ import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.domain.dto.LinkChat;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("add link chat")
     public void add() {
-        Link link = linkRepository.add(URL);
+        Link link = linkRepository.add(URL, OffsetDateTime.now());
         Chat chat = chatRepository.add(1L);
         LinkChat expected = linkChatRepository.add(URL, 1L);
         List<LinkChat> actualLinkChats = linkChatRepository.findAll();
@@ -54,7 +55,7 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link chat")
     public void remove() {
-        linkRepository.add(URL);
+        linkRepository.add(URL, OffsetDateTime.now());
         chatRepository.add(1L);
         linkChatRepository.add(URL, 1L);
         linkChatRepository.remove(URL, 1L);

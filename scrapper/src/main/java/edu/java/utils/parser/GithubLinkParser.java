@@ -9,6 +9,11 @@ public final class GithubLinkParser implements LinkParser {
     @SuppressWarnings("MagicNumber")
     public LinkParserResult parseLink(URI url) {
         String[] pathParts = url.getPath().split("/");
-        return pathParts.length >= 3 ? new GithubLinkParserResult(pathParts[1], pathParts[2]) : null;
+        if (pathParts.length >= 3) {
+            String urlString = url.toString();
+            URI newUrl = URI.create(urlString.substring(0, urlString.indexOf(pathParts[2]) + pathParts[2].length()));
+            return new GithubLinkParserResult(newUrl, pathParts[1], pathParts[2]);
+        }
+        return null;
     }
 }

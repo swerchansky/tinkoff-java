@@ -1,6 +1,7 @@
 package edu.java.bot.command;
 
 import edu.java.bot.client.ScrapperClient;
+import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,11 +27,15 @@ public class UntrackCommand implements Command {
         if (arguments.size() != 1) {
             return Mono.just("""
                 To stop tracking a link, use the /untrack command followed by the link
-                Example: /untrack https://www.google.com
+                Example: /untrack https://github.com/user/repo
                 """);
         }
-        return scrapperClient.deleteLink(chatId, arguments.getFirst())
-            .map(linkResponse -> "Link " + linkResponse.url + " successfully removed from tracking")
-            .onErrorResume(error -> Mono.just(error.getMessage()));
+        try {
+            return scrapperClient.deleteLink(chatId, URI.create(arguments.getFirst()))
+                .map(linkResponse -> "Link " + linkResponse.url + " successfully removed from tracking")
+                .onErrorResume(error -> Mono.just(error.getMessage()));
+        } catch (IllegalArgumentException e) {
+            return Mono.just("Invalid link");
+        }
     }
 }

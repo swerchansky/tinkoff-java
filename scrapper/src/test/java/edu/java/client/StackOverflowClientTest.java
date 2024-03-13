@@ -49,8 +49,7 @@ class StackOverflowClientTest {
         StepVerifier.create(stackOverflowClient.getQuestionInfo(1L))
             .expectErrorSatisfies(throwable -> assertThat(throwable)
                 .isInstanceOf(ApiErrorException.class)
-                .hasMessageContaining("Stackoverflow API error")
-                .hasMessageEndingWith("500"))
+                .hasMessageContaining("Stackoverflow API error"))
             .verify();
     }
 

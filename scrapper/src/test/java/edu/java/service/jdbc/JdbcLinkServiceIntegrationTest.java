@@ -10,6 +10,7 @@ import edu.java.domain.repository.ChatRepository;
 import edu.java.domain.repository.LinkChatRepository;
 import edu.java.domain.repository.LinkRepository;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("add link")
     public void add() {
-        linkService.add(URI.create("https://google.com"), 1L);
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
         List<LinkChat> linkChats = linkChatRepository.findAll();
 
         assertThat(linkChats).isNotEmpty();
@@ -55,7 +56,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link")
     public void remove() {
-        linkService.add(URI.create("https://google.com"), 1L);
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
         linkService.remove(URI.create("https://google.com"), 1L);
         List<LinkChat> linkChats = linkChatRepository.findAll();
 
@@ -74,7 +75,8 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
 
         linkChats.forEach(linkChat -> linkService.add(
             linkChat.getLink().getUrl(),
-            linkChat.getChat().getChatId()
+            linkChat.getChat().getChatId(),
+            linkChat.getLink().getUpdatedDate()
         ));
 
         List<Chat> chats = linkService.findChats(URI.create("https://google.com"));
@@ -96,7 +98,8 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
 
         linkChats.forEach(linkChat -> linkService.add(
             linkChat.getLink().getUrl(),
-            linkChat.getChat().getChatId()
+            linkChat.getChat().getChatId(),
+            linkChat.getLink().getUpdatedDate()
         ));
 
         List<Link> links = linkService.findLinks(1L);

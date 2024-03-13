@@ -9,6 +9,9 @@ public sealed interface LinkParser permits GithubLinkParser, StackOverflowLinkPa
     static LinkParserResult parseLinkInfo(URI url) {
         String host = url.getHost();
         LinkParser parser;
+        if (host == null) {
+            return null;
+        }
         if (host.contains("github")) {
             parser = new GithubLinkParser();
         } else if (host.contains("stackoverflow")) {

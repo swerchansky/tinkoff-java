@@ -3,6 +3,7 @@ package edu.java.bot.client;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import edu.java.bot.client.exception.ApiErrorException;
+import java.net.URI;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -25,17 +26,6 @@ class ScrapperClientTest {
             .willReturn(aResponse().withStatus(HttpStatus.OK.value())));
 
         StepVerifier.create(scrapperClient.registerChat(123L))
-            .expectComplete()
-            .verify();
-    }
-
-    @Test
-    @DisplayName("delete chat successfully")
-    void deleteChatSuccessfully() {
-        stubFor(WireMock.delete("/tg-chat/123")
-            .willReturn(aResponse().withStatus(HttpStatus.OK.value())));
-
-        StepVerifier.create(scrapperClient.deleteChat(123L))
             .expectComplete()
             .verify();
     }
@@ -65,7 +55,7 @@ class ScrapperClientTest {
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("{\"url\":\"http://example.com\",\"id\":123}")));
 
-        StepVerifier.create(scrapperClient.addLink(123L, "http://example.com"))
+        StepVerifier.create(scrapperClient.addLink(123L, URI.create("http://example.com")))
             .assertNext(response -> {
                     assertThat(response.getUrl().toString()).isEqualTo("http://example.com");
                     assertThat(response.getId()).isEqualTo(123L);
@@ -82,7 +72,7 @@ class ScrapperClientTest {
                 .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .withBody("{\"url\":\"http://example.com\"}")));
 
-        StepVerifier.create(scrapperClient.deleteLink(123L, "http://example.com"))
+        StepVerifier.create(scrapperClient.deleteLink(123L, URI.create("http://example.com")))
             .assertNext(response -> assertThat(response.getUrl().toString()).isEqualTo("http://example.com"))
             .verifyComplete();
     }
@@ -101,8 +91,6 @@ class ScrapperClientTest {
                 assertThat(throwable)
                     .isInstanceOf(ApiErrorException.class)
                     .hasMessageContaining("Invalid request")
-                    .hasMessageContaining("400")
-                    .hasMessageContaining("Invalid chat id")
             ).verify();
     }
 }

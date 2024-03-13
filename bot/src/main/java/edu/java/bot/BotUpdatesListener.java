@@ -2,6 +2,7 @@ package edu.java.bot;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
+import com.pengrad.telegrambot.model.LinkPreviewOptions;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
@@ -38,11 +39,7 @@ public class BotUpdatesListener implements UpdatesListener {
             .findFirst()
             .ifPresentOrElse(
                 command -> command.execute(chatId, commandArguments.arguments).subscribe(
-                    responseText -> {
-                        SendMessage sendMessage =
-                            new SendMessage(chatId, responseText).parseMode(ParseMode.Markdown);
-                        telegramBot.execute(sendMessage);
-                    },
+                    responseText -> telegramBot.execute(createMessage(chatId, responseText)),
                     error -> log.error("Error while executing command", error)
                 ),
                 () -> telegramBot.execute(new SendMessage(chatId, "Unknown command"))
@@ -55,5 +52,12 @@ public class BotUpdatesListener implements UpdatesListener {
             String commandName = words.getFirst();
             return new CommandArguments(commandName, words.subList(1, words.size()));
         }
+    }
+
+    @SuppressWarnings("InnerTypeLast")
+    private static SendMessage createMessage(Long chatId, String text) {
+        return new SendMessage(chatId, text)
+            .parseMode(ParseMode.Markdown)
+            .linkPreviewOptions(new LinkPreviewOptions().isDisabled(true));
     }
 }

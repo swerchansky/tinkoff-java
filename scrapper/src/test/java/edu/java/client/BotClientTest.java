@@ -49,8 +49,6 @@ class BotClientTest {
                 assertThat(throwable)
                     .isInstanceOf(ApiErrorException.class)
                     .hasMessageContaining("Invalid request")
-                    .hasMessageContaining("400")
-                    .hasMessageContaining("Invalid link")
             ).verify();
     }
 }

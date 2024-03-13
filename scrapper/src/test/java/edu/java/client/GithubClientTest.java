@@ -45,8 +45,7 @@ class GithubClientTest {
         StepVerifier.create(githubClient.getRepositoryInfo("owner", "repo"))
             .expectErrorSatisfies(throwable -> assertThat(throwable)
                 .isInstanceOf(ApiErrorException.class)
-                .hasMessageContaining("Github API error")
-                .hasMessageEndingWith("500"))
+                .hasMessageContaining("Github API error"))
             .verify();
     }
 

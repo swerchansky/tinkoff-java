@@ -28,18 +28,6 @@ public interface ScrapperController {
     void addChat(@PathVariable long id);
 
     @Operation(responses = {
-        @ApiResponse(responseCode = "200", description = "Чат успешно удален"),
-        @ApiResponse(responseCode = "400", description = "Некорректные параметры запроса", content = {
-            @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiErrorResponse.class))
-        }),
-        @ApiResponse(responseCode = "404", description = "Чат не существует", content = {
-            @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ApiErrorResponse.class))
-        })
-    })
-    @DeleteMapping(value = "/tg-chat/{id}")
-    void deleteChat(@PathVariable long id);
-
-    @Operation(responses = {
         @ApiResponse(responseCode = "200", description = "ССылки успешно получены", content = {
             @Content(mediaType = APPLICATION_JSON_VALUE, schema = @Schema(implementation = ListLinksResponse.class))
         }),

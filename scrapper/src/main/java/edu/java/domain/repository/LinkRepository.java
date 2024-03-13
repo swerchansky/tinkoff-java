@@ -37,10 +37,9 @@ public class LinkRepository {
         return jdbcOperations.query(sql, linkRowMapper);
     }
 
-    public Link add(URI url) {
-        String sql =
-            "insert into link (url, updated_date, checked_date) values (?, now(), now()) on conflict do nothing";
-        jdbcOperations.update(sql, url.toString());
+    public Link add(URI url, OffsetDateTime updatedDate) {
+        String sql = "insert into link (url, updated_date, checked_date) values (?, ?, now()) on conflict do nothing";
+        jdbcOperations.update(sql, url.toString(), getTimestamp(updatedDate));
         return findByUrl(url);
     }
 
@@ -56,7 +55,10 @@ public class LinkRepository {
 
     public void updateUpdatedDate(URI url, OffsetDateTime updatedDate) {
         String sql = "update link set updated_date = ? where url = ?";
-        Timestamp timestamp = Timestamp.valueOf(updatedDate.atZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime());
-        jdbcOperations.update(sql, timestamp, url.toString());
+        jdbcOperations.update(sql, getTimestamp(updatedDate), url.toString());
+    }
+
+    private static Timestamp getTimestamp(OffsetDateTime updatedDate) {
+        return Timestamp.valueOf(updatedDate.atZoneSameInstant(ZoneId.of("UTC")).toLocalDateTime());
     }
 }

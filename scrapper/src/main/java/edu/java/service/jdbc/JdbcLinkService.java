@@ -8,6 +8,7 @@ import edu.java.domain.repository.LinkChatRepository;
 import edu.java.domain.repository.LinkRepository;
 import edu.java.service.LinkService;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,12 @@ public class JdbcLinkService implements LinkService {
     private final ChatRepository chatRepository;
 
     @Override
-    public Link add(URI url, Long chatId) {
+    public Link add(URI url, Long chatId, OffsetDateTime lastUpdate) {
         Chat chat = chatRepository.findById(chatId);
         if (chat == null) {
             chatRepository.add(chatId);
         }
-        Link link = linkRepository.add(url);
+        Link link = linkRepository.add(url, lastUpdate);
         linkChatRepository.add(url, chatId);
         return link;
     }
@@ -41,6 +42,11 @@ public class JdbcLinkService implements LinkService {
     @Override
     public Link findLink(URI url) {
         return linkRepository.findByUrl(url);
+    }
+
+    @Override
+    public LinkChat findLinkWithId(URI url, Long chatId) {
+        return linkChatRepository.find(url, chatId);
     }
 
     @Override
