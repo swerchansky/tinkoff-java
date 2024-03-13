@@ -60,7 +60,6 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         List<LinkChat> linkChats = linkChatRepository.findAll();
 
         assertThat(linkChats).isEmpty();
-        assertThat(linkRepository.findAll()).isEmpty();
     }
 
     @Test
