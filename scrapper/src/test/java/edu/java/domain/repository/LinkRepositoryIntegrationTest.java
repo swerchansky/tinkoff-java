@@ -30,13 +30,15 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("add link")
     public void add() {
-        Link expected = linkRepository.add(URL, OffsetDateTime.now());
+        Link expected = linkRepository.add(URL, OffsetDateTime.now(), 0, 1);
         List<Link> actualLinks = linkRepository.findAll();
 
         assertThat(actualLinks).hasSize(1);
         assertThat(actualLinks).containsExactly(expected);
         Link actual = actualLinks.getFirst();
         assertThat(actual.getUrl()).isEqualTo(URL);
+        assertThat(actual.getStarCount()).isEqualTo(0);
+        assertThat(actual.getAnswerCount()).isEqualTo(1);
     }
 
     @Test
@@ -44,7 +46,7 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link")
     public void remove() {
-        linkRepository.add(URL, OffsetDateTime.now());
+        linkRepository.add(URL, OffsetDateTime.now(), 0, 1);
         linkRepository.remove(URL);
 
         List<Link> actualLinks = linkRepository.findAll();
@@ -56,11 +58,13 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find by url")
     public void findByUrl() {
-        linkRepository.add(URL, OffsetDateTime.now());
+        linkRepository.add(URL, OffsetDateTime.now(), 0, 1);
         Link actual = linkRepository.findByUrl(URL);
 
         assertThat(actual).isNotNull();
         assertThat(actual.getUrl()).isEqualTo(URL);
+        assertThat(actual.getStarCount()).isEqualTo(0);
+        assertThat(actual.getAnswerCount()).isEqualTo(1);
     }
 
     @Test

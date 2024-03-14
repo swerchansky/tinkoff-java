@@ -24,6 +24,16 @@ public class JdbcLinkUpdater implements LinkUpdater {
     }
 
     @Override
+    public void updateStarCount(Link link, Integer starCount) {
+        linkRepository.updateStarCount(link.getUrl(), starCount);
+    }
+
+    @Override
+    public void updateAnswerCount(Link link, Integer answerCount) {
+        linkRepository.updateAnswerCount(link.getUrl(), answerCount);
+    }
+
+    @Override
     public List<Link> getOldLinks() {
         return linkRepository.findOld();
     }

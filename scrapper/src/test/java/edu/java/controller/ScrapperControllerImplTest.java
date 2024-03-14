@@ -60,7 +60,7 @@ class ScrapperControllerImplTest {
     @DisplayName("getLinks should return links")
     void getLinksShouldReturnLinks() {
         long id = 1L;
-        Link link = new Link(URI.create("http://example.com"), OffsetDateTime.now(), OffsetDateTime.now());
+        Link link = new Link(URI.create("http://example.com"), 0, 0, OffsetDateTime.now(), OffsetDateTime.now());
         when(linkService.findLinks(id)).thenReturn(Collections.singletonList(link));
         assertThat(scrapperController.getLinks(id))
             .isEqualTo(new ListLinksResponse(Collections.singletonList(new LinkResponse(link.getUrl())), 1));
@@ -73,7 +73,7 @@ class ScrapperControllerImplTest {
         URI uriGithub = URI.create("http://github.com/owner/repo");
         AddLinkRequest addGithubLinkRequest = new AddLinkRequest(uriGithub);
         when(githubClient.getRepositoryInfo(any(), any()))
-            .thenReturn(Mono.just(new GithubRepositoryResponse("repo", "owner", OffsetDateTime.now())));
+            .thenReturn(Mono.just(new GithubRepositoryResponse("repo", "owner", 0, OffsetDateTime.now())));
 
         URI uriStackoverflow = URI.create("http://stackoverflow.com/questions/1");
         AddLinkRequest addStackoverflowLinkRequest = new AddLinkRequest(uriStackoverflow);
@@ -81,14 +81,15 @@ class ScrapperControllerImplTest {
             .thenReturn(Mono.just(new StackOverflowQuestionsResponse(List.of(new QuestionResponse(
                 "",
                 "",
-                OffsetDateTime.now()
+                OffsetDateTime.now(),
+                0
             )))));
 
         scrapperController.addLink(id, addGithubLinkRequest);
-        verify(linkService, times(1)).add(eq(uriGithub), eq(id), any());
+        verify(linkService, times(1)).add(eq(uriGithub), eq(id), any(), eq(0), eq(null));
 
         scrapperController.addLink(id, addStackoverflowLinkRequest);
-        verify(linkService, times(1)).add(eq(uriStackoverflow), eq(id), any());
+        verify(linkService, times(1)).add(eq(uriStackoverflow), eq(id), any(), eq(null), eq(0));
     }
 
     @Test
@@ -96,7 +97,13 @@ class ScrapperControllerImplTest {
     void deleteLinkShouldDeleteLink() {
         long id = 1L;
         URI uri = URI.create("http://github.com/owner/repo");
-        when(linkService.findLinkWithId(uri, id)).thenReturn(new LinkChat(new Link(uri, OffsetDateTime.now(), OffsetDateTime.now()), new Chat(id)));
+        when(linkService.findLinkWithId(uri, id)).thenReturn(new LinkChat(new Link(
+            uri,
+            0,
+            0,
+            OffsetDateTime.now(),
+            OffsetDateTime.now()
+        ), new Chat(id)));
         scrapperController.deleteLink(id, new RemoveLinkRequest(uri));
         verify(linkService, times(1)).remove(uri, id);
     }

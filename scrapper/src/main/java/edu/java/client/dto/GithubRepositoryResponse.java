@@ -14,6 +14,8 @@ public class GithubRepositoryResponse {
     public String owner;
     @JsonProperty("name")
     public String name;
+    @JsonProperty("stargazers_count")
+    public int starCount;
     @JsonProperty("updated_at")
     public OffsetDateTime updatedAt;
 

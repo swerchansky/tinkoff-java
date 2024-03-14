@@ -21,12 +21,12 @@ public class JdbcLinkService implements LinkService {
     private final ChatRepository chatRepository;
 
     @Override
-    public Link add(URI url, Long chatId, OffsetDateTime lastUpdate) {
+    public Link add(URI url, Long chatId, OffsetDateTime lastUpdate, Integer starCount, Integer answerCount) {
         Chat chat = chatRepository.findById(chatId);
         if (chat == null) {
             chatRepository.add(chatId);
         }
-        Link link = linkRepository.add(url, lastUpdate);
+        Link link = linkRepository.add(url, lastUpdate, starCount, answerCount);
         linkChatRepository.add(url, chatId);
         return link;
     }

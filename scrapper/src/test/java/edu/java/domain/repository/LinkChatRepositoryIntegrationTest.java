@@ -38,7 +38,7 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("add link chat")
     public void add() {
-        Link link = linkRepository.add(URL, OffsetDateTime.now());
+        Link link = linkRepository.add(URL, OffsetDateTime.now(), 0, 0);
         Chat chat = chatRepository.add(1L);
         LinkChat expected = linkChatRepository.add(URL, 1L);
         List<LinkChat> actualLinkChats = linkChatRepository.findAll();
@@ -55,7 +55,7 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link chat")
     public void remove() {
-        linkRepository.add(URL, OffsetDateTime.now());
+        linkRepository.add(URL, OffsetDateTime.now(), 0, 0);
         chatRepository.add(1L);
         linkChatRepository.add(URL, 1L);
         linkChatRepository.remove(URL, 1L);

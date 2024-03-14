@@ -42,7 +42,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("add link")
     public void add() {
-        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now(), 0, 0);
         List<LinkChat> linkChats = linkChatRepository.findAll();
 
         assertThat(linkChats).isNotEmpty();
@@ -56,7 +56,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link")
     public void remove() {
-        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now(), 0, 0);
         linkService.remove(URI.create("https://google.com"), 1L);
         List<LinkChat> linkChats = linkChatRepository.findAll();
 
@@ -69,14 +69,16 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @DisplayName("find chats")
     public void findChats() {
         List<LinkChat> linkChats = List.of(
-            new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(1L)),
-            new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(2L))
+            new LinkChat(new Link(URI.create("https://google.com"), 0, 0, now(), now()), new Chat(1L)),
+            new LinkChat(new Link(URI.create("https://google.com"), 0, 0, now(), now()), new Chat(2L))
         );
 
         linkChats.forEach(linkChat -> linkService.add(
             linkChat.getLink().getUrl(),
             linkChat.getChat().getChatId(),
-            linkChat.getLink().getUpdatedDate()
+            linkChat.getLink().getUpdatedDate(),
+            linkChat.getLink().getStarCount(),
+            linkChat.getLink().getAnswerCount()
         ));
 
         List<Chat> chats = linkService.findChats(URI.create("https://google.com"));
@@ -92,14 +94,16 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @DisplayName("find links")
     public void findLinks() {
         List<LinkChat> linkChats = List.of(
-            new LinkChat(new Link(URI.create("https://google.com"), now(), now()), new Chat(1L)),
-            new LinkChat(new Link(URI.create("https://example.com"), now(), now()), new Chat(1L))
+            new LinkChat(new Link(URI.create("https://google.com"), 0, 0, now(), now()), new Chat(1L)),
+            new LinkChat(new Link(URI.create("https://example.com"), 0,0, now(), now()), new Chat(1L))
         );
 
         linkChats.forEach(linkChat -> linkService.add(
             linkChat.getLink().getUrl(),
             linkChat.getChat().getChatId(),
-            linkChat.getLink().getUpdatedDate()
+            linkChat.getLink().getUpdatedDate(),
+            linkChat.getLink().getStarCount(),
+            linkChat.getLink().getAnswerCount()
         ));
 
         List<Link> links = linkService.findLinks(1L);
@@ -115,7 +119,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find link")
     public void findLink() {
-        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now(), 0, 0);
         Link link = linkService.findLink(URI.create("https://google.com"));
 
         assertThat(link).isNotNull();
@@ -127,7 +131,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find link with id")
     public void findLinkWithId() {
-        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now());
+        linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now(), 0, 0);
         LinkChat linkChat = linkService.findLinkWithId(URI.create("https://google.com"), 1L);
 
         assertThat(linkChat).isNotNull();

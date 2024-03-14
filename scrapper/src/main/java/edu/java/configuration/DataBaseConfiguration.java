@@ -22,6 +22,8 @@ public class DataBaseConfiguration {
     private static final String USERNAME_PASSWORD = "postgres";
     private static final String CHECKED_DATE_COLUMN = "checked_date";
     private static final String UPDATED_DATE_COLUMN = "updated_date";
+    private static final String ANSWER_COUNT_COLUMN = "answer_count";
+    private static final String STAR_COUNT_COLUMN = "star_count";
     private static final String CHAT_ID_COLUMN = "chat_id";
     private static final String URL_COLUMN = "url";
     private static final String TIMEZONE = "Z";
@@ -64,6 +66,8 @@ public class DataBaseConfiguration {
             try {
                 return new Link(
                     new URI(rs.getString(URL_COLUMN)),
+                    rs.getInt(STAR_COUNT_COLUMN),
+                    rs.getInt(ANSWER_COUNT_COLUMN),
                     ofInstant(rs.getTimestamp(UPDATED_DATE_COLUMN)),
                     ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN))
                 );
@@ -80,6 +84,8 @@ public class DataBaseConfiguration {
                 return new LinkChat(
                     new Link(
                         new URI(rs.getString(URL_COLUMN)),
+                        rs.getInt(STAR_COUNT_COLUMN),
+                        rs.getInt(ANSWER_COUNT_COLUMN),
                         ofInstant(rs.getTimestamp(UPDATED_DATE_COLUMN)),
                         ofInstant(rs.getTimestamp(CHECKED_DATE_COLUMN))
                     ),
