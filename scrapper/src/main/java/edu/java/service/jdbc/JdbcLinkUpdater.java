@@ -1,7 +1,7 @@
 package edu.java.service.jdbc;
 
 import edu.java.domain.dto.Link;
-import edu.java.domain.repository.LinkRepository;
+import edu.java.domain.repository.jdbc.LinkRepository;
 import edu.java.service.LinkUpdater;
 import java.time.OffsetDateTime;
 import java.util.List;

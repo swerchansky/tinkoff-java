@@ -4,7 +4,7 @@ import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
 import edu.java.configuration.DataBaseConfiguration;
 import edu.java.domain.dto.Chat;
-import edu.java.domain.repository.ChatRepository;
+import edu.java.domain.repository.jdbc.ChatRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

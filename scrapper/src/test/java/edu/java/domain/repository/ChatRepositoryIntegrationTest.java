@@ -5,6 +5,8 @@ import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
 import edu.java.configuration.DataBaseConfiguration;
 import edu.java.domain.dto.Chat;
 import java.util.List;
+
+import edu.java.domain.repository.jdbc.ChatRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,3 +1,5 @@
+package generator;
+
 import org.jooq.codegen.GenerationTool;
 import org.jooq.meta.jaxb.Configuration;
 import org.jooq.meta.jaxb.Database;
@@ -6,6 +8,7 @@ import org.jooq.meta.jaxb.Generator;
 import org.jooq.meta.jaxb.Property;
 import org.jooq.meta.jaxb.Target;
 
+@SuppressWarnings({"HideUtilityClassConstructor", "UncommentedMain"})
 public class JooqGenerator {
     public static void main(String[] args) throws Exception {
         Database database = new Database()
