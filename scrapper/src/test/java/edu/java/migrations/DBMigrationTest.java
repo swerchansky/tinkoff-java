@@ -1,9 +1,9 @@
 package edu.java.migrations;
 
+import edu.java.IntegrationEnvironment;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import edu.java.IntegrationEnvironment;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -33,5 +33,7 @@ public class DBMigrationTest extends IntegrationEnvironment {
         String sql = "INSERT INTO link (url,updated_date,checked_date) VALUES ('http://google.com', now(), now())";
         int result = statement.executeUpdate(sql);
         assertThat(result).isEqualTo(1);
+        sql = "DELETE FROM link WHERE url = 'http://google.com'";
+        statement.executeUpdate(sql);
     }
 }

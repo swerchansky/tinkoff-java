@@ -9,7 +9,6 @@ import edu.java.controller.dto.AddLinkRequest;
 import edu.java.controller.dto.LinkResponse;
 import edu.java.controller.dto.ListLinksResponse;
 import edu.java.controller.dto.RemoveLinkRequest;
-import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.domain.dto.LinkChat;
 import edu.java.service.ChatService;
@@ -97,13 +96,16 @@ class ScrapperControllerImplTest {
     void deleteLinkShouldDeleteLink() {
         long id = 1L;
         URI uri = URI.create("http://github.com/owner/repo");
-        when(linkService.findLinkWithId(uri, id)).thenReturn(new LinkChat(new Link(
-            uri,
-            0,
-            0,
-            OffsetDateTime.now(),
-            OffsetDateTime.now()
-        ), new Chat(id)));
+        when(linkService.findLinkWithId(uri, id)).thenReturn(
+            new LinkChat(
+                uri,
+                id,
+                0,
+                0,
+                OffsetDateTime.now(),
+                OffsetDateTime.now()
+            )
+        );
         scrapperController.deleteLink(id, new RemoveLinkRequest(uri));
         verify(linkService, times(1)).remove(uri, id);
     }

@@ -1,4 +1,4 @@
-package edu.java.domain.repository;
+package edu.java.domain.repository.jdbc;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
@@ -6,7 +6,7 @@ import edu.java.configuration.DataBaseConfiguration;
 import edu.java.domain.dto.Chat;
 import java.util.List;
 
-import edu.java.domain.repository.jdbc.ChatRepository;
+import edu.java.domain.repository.jdbc.JdbcChatRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,19 +18,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {
     IntegrationEnvironmentConfiguration.class,
     DataBaseConfiguration.class,
-    ChatRepository.class
+    JdbcChatRepository.class
 })
-class ChatRepositoryIntegrationTest extends IntegrationEnvironment {
+class JdbcChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Autowired
-    private ChatRepository chatRepository;
+    private JdbcChatRepository jdbcChatRepository;
 
     @Test
     @Transactional
     @Rollback
     @DisplayName("add chat")
     public void add() {
-        Chat expected = chatRepository.add(1L);
-        List<Chat> actual = chatRepository.findAll();
+        Chat expected = jdbcChatRepository.add(1L);
+        List<Chat> actual = jdbcChatRepository.findAll();
 
         assertThat(actual).hasSize(1);
         assertThat(actual).containsExactly(expected);
@@ -42,9 +42,9 @@ class ChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove chat")
     public void remove() {
-        chatRepository.add(1L);
-        chatRepository.remove(1L);
-        List<Chat> actualChats = chatRepository.findAll();
+        jdbcChatRepository.add(1L);
+        jdbcChatRepository.remove(1L);
+        List<Chat> actualChats = jdbcChatRepository.findAll();
 
         assertThat(actualChats).isEmpty();
     }
@@ -54,10 +54,10 @@ class ChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find chat by id")
     public void findById() {
-        chatRepository.add(1L);
-        Chat expected = chatRepository.add(5L);
+        jdbcChatRepository.add(1L);
+        Chat expected = jdbcChatRepository.add(5L);
 
-        Chat actual = chatRepository.findById(5L);
+        Chat actual = jdbcChatRepository.findById(5L);
         assertThat(actual).isEqualTo(expected);
         assertThat(actual.getChatId()).isEqualTo(5L);
     }

@@ -6,9 +6,9 @@ import edu.java.configuration.DataBaseConfiguration;
 import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.domain.dto.LinkChat;
-import edu.java.domain.repository.jdbc.ChatRepository;
-import edu.java.domain.repository.jdbc.LinkChatRepository;
-import edu.java.domain.repository.jdbc.LinkRepository;
+import edu.java.domain.repository.jdbc.JdbcChatRepository;
+import edu.java.domain.repository.jdbc.JdbcLinkChatRepository;
+import edu.java.domain.repository.jdbc.JdbcLinkRepository;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -24,16 +24,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {
     IntegrationEnvironmentConfiguration.class,
     DataBaseConfiguration.class,
-    ChatRepository.class,
-    LinkRepository.class,
-    LinkChatRepository.class,
+    JdbcChatRepository.class,
+    JdbcLinkRepository.class,
+    JdbcLinkChatRepository.class,
     JdbcLinkService.class
 })
 class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Autowired
-    private LinkRepository linkRepository;
+    private JdbcLinkRepository jdbcLinkRepository;
     @Autowired
-    private LinkChatRepository linkChatRepository;
+    private JdbcLinkChatRepository jdbcLinkChatRepository;
     @Autowired
     private JdbcLinkService linkService;
 
@@ -43,12 +43,12 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @DisplayName("add link")
     public void add() {
         linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now(), 0, 0);
-        List<LinkChat> linkChats = linkChatRepository.findAll();
+        List<LinkChat> linkChats = jdbcLinkChatRepository.findAll();
 
         assertThat(linkChats).isNotEmpty();
-        assertThat(linkChats.getFirst().getLink().getUrl()).isEqualTo(URI.create("https://google.com"));
-        assertThat(linkChats.getFirst().getChat().getChatId()).isEqualTo(1L);
-        assertThat(linkRepository.findAll()).isNotEmpty();
+        assertThat(linkChats.getFirst().getUrl()).isEqualTo(URI.create("https://google.com"));
+        assertThat(linkChats.getFirst().getChatId()).isEqualTo(1L);
+        assertThat(jdbcLinkRepository.findAll()).isNotEmpty();
     }
 
     @Test
@@ -58,7 +58,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     public void remove() {
         linkService.add(URI.create("https://google.com"), 1L, OffsetDateTime.now(), 0, 0);
         linkService.remove(URI.create("https://google.com"), 1L);
-        List<LinkChat> linkChats = linkChatRepository.findAll();
+        List<LinkChat> linkChats = jdbcLinkChatRepository.findAll();
 
         assertThat(linkChats).isEmpty();
     }
@@ -69,23 +69,23 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @DisplayName("find chats")
     public void findChats() {
         List<LinkChat> linkChats = List.of(
-            new LinkChat(new Link(URI.create("https://google.com"), 0, 0, now(), now()), new Chat(1L)),
-            new LinkChat(new Link(URI.create("https://google.com"), 0, 0, now(), now()), new Chat(2L))
+            new LinkChat(URI.create("https://google.com"), 1L, 0, 0, now(), now()),
+            new LinkChat(URI.create("https://google.com"), 2L, 0, 0, now(), now())
         );
 
         linkChats.forEach(linkChat -> linkService.add(
-            linkChat.getLink().getUrl(),
-            linkChat.getChat().getChatId(),
-            linkChat.getLink().getUpdatedDate(),
-            linkChat.getLink().getStarCount(),
-            linkChat.getLink().getAnswerCount()
+            linkChat.getUrl(),
+            linkChat.getChatId(),
+            linkChat.getUpdatedDate(),
+            linkChat.getStarCount(),
+            linkChat.getAnswerCount()
         ));
 
         List<Chat> chats = linkService.findChats(URI.create("https://google.com"));
 
         assertThat(chats).isNotEmpty();
         assertThat(chats).hasSize(2);
-        assertThat(chats).containsAll(linkChats.stream().map(LinkChat::getChat).toList());
+        assertThat(chats).containsAll(linkChats.stream().map(linkChat -> new Chat(linkChat.getChatId())).toList());
     }
 
     @Test
@@ -94,16 +94,16 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
     @DisplayName("find links")
     public void findLinks() {
         List<LinkChat> linkChats = List.of(
-            new LinkChat(new Link(URI.create("https://google.com"), 0, 0, now(), now()), new Chat(1L)),
-            new LinkChat(new Link(URI.create("https://example.com"), 0,0, now(), now()), new Chat(1L))
+            new LinkChat(URI.create("https://google.com"), 1L, 0, 0, now(), now()),
+            new LinkChat(URI.create("https://example.com"), 1L, 0, 0, now(), now())
         );
 
         linkChats.forEach(linkChat -> linkService.add(
-            linkChat.getLink().getUrl(),
-            linkChat.getChat().getChatId(),
-            linkChat.getLink().getUpdatedDate(),
-            linkChat.getLink().getStarCount(),
-            linkChat.getLink().getAnswerCount()
+            linkChat.getUrl(),
+            linkChat.getChatId(),
+            linkChat.getUpdatedDate(),
+            linkChat.getStarCount(),
+            linkChat.getAnswerCount()
         ));
 
         List<Link> links = linkService.findLinks(1L);
@@ -111,7 +111,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         assertThat(links).isNotEmpty();
         assertThat(links).hasSize(2);
         assertThat(links.stream().map(Link::getUrl).toList())
-            .containsAll(linkChats.stream().map(LinkChat::getLink).map(Link::getUrl).toList());
+            .containsAll(linkChats.stream().map(LinkChat::getUrl).toList());
     }
 
     @Test
@@ -135,7 +135,7 @@ class JdbcLinkServiceIntegrationTest extends IntegrationEnvironment {
         LinkChat linkChat = linkService.findLinkWithId(URI.create("https://google.com"), 1L);
 
         assertThat(linkChat).isNotNull();
-        assertThat(linkChat.getLink().getUrl()).isEqualTo(URI.create("https://google.com"));
-        assertThat(linkChat.getChat().getChatId()).isEqualTo(1L);
+        assertThat(linkChat.getUrl()).isEqualTo(URI.create("https://google.com"));
+        assertThat(linkChat.getChatId()).isEqualTo(1L);
     }
 }

@@ -33,10 +33,10 @@ public class JooqGenerator {
             .withConstructorPropertiesAnnotationOnRecords(true)
             .withFluentSetters(false)
             .withDaos(false)
-            .withPojos(true);
+            .withPojos(false);
 
         Target target = new Target()
-            .withPackageName("edu.java.domain.repository.jooq")
+            .withPackageName("edu.java.domain.repository.jooq.generated")
             .withDirectory("scrapper/src/main/java");
 
         Configuration configuration = new Configuration()

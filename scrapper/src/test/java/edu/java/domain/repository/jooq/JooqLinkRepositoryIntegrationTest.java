@@ -1,4 +1,4 @@
-package edu.java.domain.repository;
+package edu.java.domain.repository.jooq;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
@@ -7,7 +7,6 @@ import edu.java.domain.dto.Link;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import edu.java.domain.repository.jdbc.LinkRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,20 +18,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {
     IntegrationEnvironmentConfiguration.class,
     DataBaseConfiguration.class,
-    LinkRepository.class
+    JooqLinkRepository.class
 })
-class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
-    private static final URI URL = URI.create("http://google.com");
+class JooqLinkRepositoryIntegrationTest extends IntegrationEnvironment {
+    private static final URI URL = URI.create("http://yandex.ru");
     @Autowired
-    private LinkRepository linkRepository;
+    private JooqLinkRepository jooqLinkRepository;
 
     @Test
     @Transactional
     @Rollback
     @DisplayName("add link")
     public void add() {
-        Link expected = linkRepository.add(URL, OffsetDateTime.now(), 0, 1);
-        List<Link> actualLinks = linkRepository.findAll();
+        Link expected = jooqLinkRepository.add(URL, OffsetDateTime.now(), 0, 1);
+        List<Link> actualLinks = jooqLinkRepository.findAll();
 
         assertThat(actualLinks).hasSize(1);
         assertThat(actualLinks).containsExactly(expected);
@@ -47,10 +46,10 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link")
     public void remove() {
-        linkRepository.add(URL, OffsetDateTime.now(), 0, 1);
-        linkRepository.remove(URL);
+        jooqLinkRepository.add(URL, OffsetDateTime.now(), 0, 1);
+        jooqLinkRepository.remove(URL);
 
-        List<Link> actualLinks = linkRepository.findAll();
+        List<Link> actualLinks = jooqLinkRepository.findAll();
         assertThat(actualLinks).isEmpty();
     }
 
@@ -59,8 +58,8 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find by url")
     public void findByUrl() {
-        linkRepository.add(URL, OffsetDateTime.now(), 0, 1);
-        Link actual = linkRepository.findByUrl(URL);
+        jooqLinkRepository.add(URL, OffsetDateTime.now(), 0, 1);
+        Link actual = jooqLinkRepository.findByUrl(URL);
 
         assertThat(actual).isNotNull();
         assertThat(actual.getUrl()).isEqualTo(URL);
@@ -73,7 +72,7 @@ class LinkRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find by unknown url")
     public void findByUnknownUrl() {
-        Link actual = linkRepository.findByUrl(URL);
+        Link actual = jooqLinkRepository.findByUrl(URL);
 
         assertThat(actual).isNull();
     }

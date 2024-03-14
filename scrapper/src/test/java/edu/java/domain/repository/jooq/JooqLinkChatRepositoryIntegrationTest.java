@@ -1,4 +1,4 @@
-package edu.java.domain.repository;
+package edu.java.domain.repository.jooq;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
@@ -9,9 +9,6 @@ import edu.java.domain.dto.LinkChat;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import edu.java.domain.repository.jdbc.ChatRepository;
-import edu.java.domain.repository.jdbc.LinkChatRepository;
-import edu.java.domain.repository.jdbc.LinkRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,34 +20,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {
     IntegrationEnvironmentConfiguration.class,
     DataBaseConfiguration.class,
-    LinkChatRepository.class,
-    ChatRepository.class,
-    LinkRepository.class
+    JooqLinkChatRepository.class,
+    JooqChatRepository.class,
+    JooqLinkRepository.class
 })
-class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
+class JooqLinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     private static final URI URL = URI.create("http://google.com");
     @Autowired
-    private LinkChatRepository linkChatRepository;
+    private JooqLinkChatRepository jooqLinkChatRepository;
     @Autowired
-    private ChatRepository chatRepository;
+    private JooqChatRepository jooqChatRepository;
     @Autowired
-    private LinkRepository linkRepository;
+    private JooqLinkRepository jooqLinkRepository;
 
     @Test
     @Transactional
     @Rollback
     @DisplayName("add link chat")
     public void add() {
-        Link link = linkRepository.add(URL, OffsetDateTime.now(), 0, 0);
-        Chat chat = chatRepository.add(1L);
-        LinkChat expected = linkChatRepository.add(URL, 1L);
-        List<LinkChat> actualLinkChats = linkChatRepository.findAll();
+        Link link = jooqLinkRepository.add(URL, OffsetDateTime.now(), 0, 0);
+        Chat chat = jooqChatRepository.add(6L);
+        LinkChat expected = jooqLinkChatRepository.add(URL, 6L);
+        List<LinkChat> actualLinkChats = jooqLinkChatRepository.findAll();
 
         assertThat(actualLinkChats).hasSize(1);
         assertThat(actualLinkChats).containsExactly(expected);
         LinkChat actual = actualLinkChats.getFirst();
-        assertThat(actual.getLink()).isEqualTo(link);
-        assertThat(actual.getChat()).isEqualTo(chat);
+        assertThat(actual.getChatId()).isEqualTo(chat.getChatId());
+        assertThat(actual.getUrl()).isEqualTo(link.getUrl());
+        assertThat(actual.getCheckedDate()).isEqualTo(link.getCheckedDate());
+        assertThat(actual.getUpdatedDate()).isEqualTo(link.getUpdatedDate());
+        assertThat(actual.getAnswerCount()).isEqualTo(link.getAnswerCount());
+        assertThat(actual.getStarCount()).isEqualTo(link.getStarCount());
     }
 
     @Test
@@ -58,11 +59,11 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link chat")
     public void remove() {
-        linkRepository.add(URL, OffsetDateTime.now(), 0, 0);
-        chatRepository.add(1L);
-        linkChatRepository.add(URL, 1L);
-        linkChatRepository.remove(URL, 1L);
-        List<LinkChat> actualLinkChats = linkChatRepository.findAll();
+        jooqLinkRepository.add(URL, OffsetDateTime.now(), 0, 0);
+        jooqChatRepository.add(1L);
+        jooqLinkChatRepository.add(URL, 1L);
+        jooqLinkChatRepository.remove(URL, 1L);
+        List<LinkChat> actualLinkChats = jooqLinkChatRepository.findAll();
 
         assertThat(actualLinkChats).isEmpty();
     }
@@ -72,7 +73,7 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find link chat by unknown url and chat id")
     public void findUnknown() {
-        LinkChat actual = linkChatRepository.find(URL, 1L);
+        LinkChat actual = jooqLinkChatRepository.find(URL, 1L);
 
         assertThat(actual).isNull();
     }
