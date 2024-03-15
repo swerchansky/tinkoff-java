@@ -1,11 +1,11 @@
-package edu.java.service.jdbc;
+package edu.java.service.jooq;
 
 import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.domain.dto.LinkChat;
-import edu.java.domain.repository.jdbc.JdbcChatRepository;
-import edu.java.domain.repository.jdbc.JdbcLinkChatRepository;
-import edu.java.domain.repository.jdbc.JdbcLinkRepository;
+import edu.java.domain.repository.jooq.JooqChatRepository;
+import edu.java.domain.repository.jooq.JooqLinkChatRepository;
+import edu.java.domain.repository.jooq.JooqLinkRepository;
 import edu.java.service.LinkService;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class JdbcLinkService implements LinkService {
-    private final JdbcLinkChatRepository linkChatRepository;
-    private final JdbcLinkRepository linkRepository;
-    private final JdbcChatRepository chatRepository;
+public class JooqLinkService implements LinkService {
+    private final JooqLinkChatRepository linkChatRepository;
+    private final JooqLinkRepository linkRepository;
+    private final JooqChatRepository chatRepository;
 
     @Override
     public Link add(URI url, Long chatId, OffsetDateTime lastUpdate, Integer starCount, Integer answerCount) {

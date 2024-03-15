@@ -9,6 +9,8 @@ import lombok.Data;
 @AllArgsConstructor
 public class Link {
     private URI url;
+    private Integer starCount;
+    private Integer answerCount;
     private OffsetDateTime updatedDate;
     private OffsetDateTime checkedDate;
 }

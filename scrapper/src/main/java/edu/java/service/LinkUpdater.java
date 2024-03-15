@@ -9,5 +9,9 @@ public interface LinkUpdater {
 
     void updateUpdatedDate(Link link, OffsetDateTime updatedDate);
 
+    void updateStarCount(Link link, Integer starCount);
+
+    void updateAnswerCount(Link link, Integer answerCount);
+
     List<Link> getOldLinks();
 }

@@ -53,18 +53,20 @@ public class LinkUpdaterSchedulerTest {
     @Test
     @DisplayName("Should update Github links successfully")
     public void shouldUpdateGithubLinksSuccessfully() {
-        Link link = new Link(URI.create("https://github.com/user/repo"), now(), now());
+        Link link = new Link(URI.create("https://github.com/user/repo"), 0, 0, now(), now());
         when(linkUpdater.getOldLinks()).thenReturn(List.of(link));
         when(linkService.findChats(any())).thenReturn(Collections.emptyList());
         when(linkService.findLink(any())).thenReturn(new Link(
             URI.create("https://github.com/user/repo"),
+            0,
+            0,
             now(),
             now()
         ));
         when(githubClient.getRepositoryInfo(
             anyString(),
             anyString()
-        )).thenReturn(Mono.just(new GithubRepositoryResponse("", "", now())));
+        )).thenReturn(Mono.just(new GithubRepositoryResponse("", "", 0, now())));
 
         linkUpdaterScheduler.update();
         verify(botClient, times(1)).update(any());
@@ -73,17 +75,19 @@ public class LinkUpdaterSchedulerTest {
     @Test
     @DisplayName("Should update StackOverflow links successfully")
     public void shouldUpdateStackOverflowLinksSuccessfully() {
-        Link link = new Link(URI.create("https://stackoverflow.com/questions/123"), now(), now());
+        Link link = new Link(URI.create("https://stackoverflow.com/questions/123"), 0, 0, now(), now());
         when(linkUpdater.getOldLinks()).thenReturn(List.of(link));
         when(linkService.findChats(any())).thenReturn(Collections.emptyList());
         when(linkService.findLink(any())).thenReturn(new Link(
             URI.create("https://stackoverflow.com/questions/123"),
+            0,
+            0,
             now(),
             now()
         ));
         when(stackOverflowClient.getQuestionInfo(anyLong()))
             .thenReturn(Mono.just(new StackOverflowQuestionsResponse(List.of(
-                new StackOverflowQuestionsResponse.QuestionResponse("", "", now().minusDays(1))
+                new StackOverflowQuestionsResponse.QuestionResponse("", "", now().minusDays(1), 0)
             ))));
 
         linkUpdaterScheduler.update();
@@ -93,7 +97,7 @@ public class LinkUpdaterSchedulerTest {
     @Test
     @DisplayName("Should handle unsupported link type")
     public void shouldHandleUnsupportedLinkType() {
-        Link link = new Link(URI.create("https://unsupported.com/link"), now(), now());
+        Link link = new Link(URI.create("https://unsupported.com/link"), 0, 0, now(), now());
         when(linkUpdater.getOldLinks()).thenReturn(List.of(link));
 
         linkUpdaterScheduler.update();

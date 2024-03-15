@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 public interface LinkService {
-    Link add(URI url, Long chatId, OffsetDateTime lastUpdate);
+    Link add(URI url, Long chatId, OffsetDateTime lastUpdate, Integer starCount, Integer answerCount);
 
     void remove(URI url, Long chatId);
 

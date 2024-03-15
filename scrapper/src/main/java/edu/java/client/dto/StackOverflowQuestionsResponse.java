@@ -24,6 +24,8 @@ public class StackOverflowQuestionsResponse {
         public String title;
         @JsonProperty("last_activity_date")
         public OffsetDateTime updatedAt;
+        @JsonProperty("answer_count")
+        public int answerCount;
 
         @JsonProperty("owner")
         public void setOwner(Map<String, String> owner) {

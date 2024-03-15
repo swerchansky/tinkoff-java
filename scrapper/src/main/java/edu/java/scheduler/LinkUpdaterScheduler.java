@@ -30,8 +30,9 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(name = "app.scheduler.enable")
 @RequiredArgsConstructor
 public class LinkUpdaterScheduler {
-    private final LinkUpdater linkUpdater;
-    private final LinkService linkService;
+    private static final String DEFAULT_MESSAGE = "new changes detected";
+    private final LinkUpdater jdbcLinkUpdater;
+    private final LinkService jdbcLinkService;
     private final BotClient botClient;
     private final GithubClient githubClient;
     private final StackOverflowClient stackOverflowClient;
@@ -39,10 +40,10 @@ public class LinkUpdaterScheduler {
     @Scheduled(fixedDelayString = "#{@'app-edu.java.configuration.ApplicationConfig'.scheduler.interval}")
     public void update() {
         log.debug("Updating links...");
-        List<Link> oldLinks = linkUpdater.getOldLinks();
+        List<Link> oldLinks = jdbcLinkUpdater.getOldLinks();
         oldLinks.forEach(link -> {
             URI url = link.getUrl();
-            List<Long> chatIds = linkService.findChats(url).stream().map(Chat::getChatId).toList();
+            List<Long> chatIds = jdbcLinkService.findChats(url).stream().map(Chat::getChatId).toList();
             switch (LinkParser.parseLinkInfo(url)) {
                 case GithubLinkParserResult result ->
                     githubClient.getRepositoryInfo(result.getOwner(), result.getRepositoryName()).subscribe(
@@ -57,7 +58,7 @@ public class LinkUpdaterScheduler {
                 case null, default -> onError(link).accept(new IllegalArgumentException("Unsupported link type"));
             }
         });
-        linkUpdater.updateCheckedDate(oldLinks);
+        jdbcLinkUpdater.updateCheckedDate(oldLinks);
     }
 
     private static Consumer<Throwable> onError(Link link) {
@@ -66,10 +67,16 @@ public class LinkUpdaterScheduler {
 
     private Consumer<GithubRepositoryResponse> onGithubSuccessResponse(URI url, List<Long> chatIds) {
         return repository -> {
-            if (!repository.getUpdatedAt().isEqual(linkService.findLink(url).getUpdatedDate())) {
-                linkUpdater.updateUpdatedDate(linkService.findLink(url), repository.getUpdatedAt());
-                LinkUpdateRequest request = new LinkUpdateRequest(url, repository.getName(), chatIds);
-                botClient.update(request).subscribe();
+            Link link = jdbcLinkService.findLink(url);
+            String message = null;
+            if (repository.getStarCount() > link.getStarCount()) {
+                message = "new star added, current count: " + repository.getStarCount();
+            } else if (!repository.getUpdatedAt().isEqual(link.getUpdatedDate())) {
+                message = DEFAULT_MESSAGE;
+            }
+            if (message != null) {
+                updateLink(link, null, repository.getStarCount(), repository.getUpdatedAt());
+                sendMessage(url, chatIds, message);
             }
         };
     }
@@ -79,13 +86,32 @@ public class LinkUpdaterScheduler {
         List<Long> chatIds
     ) {
         return question -> {
-            OffsetDateTime currentUpdatedDate = question.getQuestions().getFirst().getUpdatedAt();
-            if (!currentUpdatedDate.isEqual(linkService.findLink(url).getUpdatedDate())) {
-                linkUpdater.updateUpdatedDate(linkService.findLink(url), currentUpdatedDate);
-                LinkUpdateRequest request =
-                    new LinkUpdateRequest(url, question.questions.getFirst().getTitle(), chatIds);
-                botClient.update(request).subscribe();
+            Link link = jdbcLinkService.findLink(url);
+            String message = null;
+            if (question.getQuestions().isEmpty()) {
+                return;
+            }
+            StackOverflowQuestionsResponse.QuestionResponse currentQuestion = question.getQuestions().getFirst();
+            if (currentQuestion.getAnswerCount() > link.getAnswerCount()) {
+                message = "new answer added, current count: " + currentQuestion.getAnswerCount();
+            } else if (!currentQuestion.getUpdatedAt().isEqual(link.getUpdatedDate())) {
+                message = DEFAULT_MESSAGE;
+            }
+            if (message != null) {
+                updateLink(link, currentQuestion.getAnswerCount(), null, currentQuestion.getUpdatedAt());
+                sendMessage(url, chatIds, message);
             }
         };
+    }
+
+    private void sendMessage(URI url, List<Long> chatIds, String message) {
+        LinkUpdateRequest request = new LinkUpdateRequest(url, message, chatIds);
+        botClient.update(request).subscribe();
+    }
+
+    private void updateLink(Link link, Integer answerCount, Integer starCount, OffsetDateTime updatedAt) {
+        jdbcLinkUpdater.updateAnswerCount(link, answerCount);
+        jdbcLinkUpdater.updateStarCount(link, starCount);
+        jdbcLinkUpdater.updateUpdatedDate(link, updatedAt);
     }
 }
