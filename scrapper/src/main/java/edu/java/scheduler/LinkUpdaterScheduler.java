@@ -31,8 +31,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LinkUpdaterScheduler {
     private static final String DEFAULT_MESSAGE = "new changes detected";
-    private final LinkUpdater linkUpdater;
-    private final LinkService linkService;
+    private final LinkUpdater jdbcLinkUpdater;
+    private final LinkService jdbcLinkService;
     private final BotClient botClient;
     private final GithubClient githubClient;
     private final StackOverflowClient stackOverflowClient;
@@ -40,10 +40,10 @@ public class LinkUpdaterScheduler {
     @Scheduled(fixedDelayString = "#{@'app-edu.java.configuration.ApplicationConfig'.scheduler.interval}")
     public void update() {
         log.debug("Updating links...");
-        List<Link> oldLinks = linkUpdater.getOldLinks();
+        List<Link> oldLinks = jdbcLinkUpdater.getOldLinks();
         oldLinks.forEach(link -> {
             URI url = link.getUrl();
-            List<Long> chatIds = linkService.findChats(url).stream().map(Chat::getChatId).toList();
+            List<Long> chatIds = jdbcLinkService.findChats(url).stream().map(Chat::getChatId).toList();
             switch (LinkParser.parseLinkInfo(url)) {
                 case GithubLinkParserResult result ->
                     githubClient.getRepositoryInfo(result.getOwner(), result.getRepositoryName()).subscribe(
@@ -58,7 +58,7 @@ public class LinkUpdaterScheduler {
                 case null, default -> onError(link).accept(new IllegalArgumentException("Unsupported link type"));
             }
         });
-        linkUpdater.updateCheckedDate(oldLinks);
+        jdbcLinkUpdater.updateCheckedDate(oldLinks);
     }
 
     private static Consumer<Throwable> onError(Link link) {
@@ -67,7 +67,7 @@ public class LinkUpdaterScheduler {
 
     private Consumer<GithubRepositoryResponse> onGithubSuccessResponse(URI url, List<Long> chatIds) {
         return repository -> {
-            Link link = linkService.findLink(url);
+            Link link = jdbcLinkService.findLink(url);
             String message = null;
             if (repository.getStarCount() > link.getStarCount()) {
                 message = "new star added, current count: " + repository.getStarCount();
@@ -86,7 +86,7 @@ public class LinkUpdaterScheduler {
         List<Long> chatIds
     ) {
         return question -> {
-            Link link = linkService.findLink(url);
+            Link link = jdbcLinkService.findLink(url);
             String message = null;
             if (question.getQuestions().isEmpty()) {
                 return;
@@ -110,8 +110,8 @@ public class LinkUpdaterScheduler {
     }
 
     private void updateLink(Link link, Integer answerCount, Integer starCount, OffsetDateTime updatedAt) {
-        linkUpdater.updateAnswerCount(link, answerCount);
-        linkUpdater.updateStarCount(link, starCount);
-        linkUpdater.updateUpdatedDate(link, updatedAt);
+        jdbcLinkUpdater.updateAnswerCount(link, answerCount);
+        jdbcLinkUpdater.updateStarCount(link, starCount);
+        jdbcLinkUpdater.updateUpdatedDate(link, updatedAt);
     }
 }

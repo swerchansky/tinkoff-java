@@ -11,6 +11,7 @@ import org.jooq.DatePart;
 import org.jooq.exception.DataAccessException;
 import org.springframework.stereotype.Repository;
 import static edu.java.domain.repository.jooq.generated.Tables.LINK;
+import static edu.java.utils.Time.getTimestamp;
 import static org.jooq.impl.DSL.currentLocalDateTime;
 import static org.jooq.impl.DSL.localDateTimeSub;
 
@@ -75,7 +76,7 @@ public class JooqLinkRepository implements LinkRepository {
     @Override
     public void updateUpdatedDate(URI url, OffsetDateTime updatedDate) {
         dslContext.update(LINK)
-            .set(LINK.UPDATED_DATE, updatedDate.toLocalDateTime())
+            .set(LINK.UPDATED_DATE, getTimestamp(updatedDate).toLocalDateTime())
             .where(LINK.URL.eq(url.toString()))
             .execute();
     }
