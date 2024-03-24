@@ -16,6 +16,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
 
 server:
   port: 8080
