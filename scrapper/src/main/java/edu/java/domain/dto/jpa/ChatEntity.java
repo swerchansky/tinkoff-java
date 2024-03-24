@@ -16,7 +16,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "chats")
+@Table(name = "chat")
 public class ChatEntity {
     @Id
     @Column(name = "chat_id")
