@@ -11,9 +11,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class JdbcLinkService implements LinkService {
     private final JdbcLinkChatRepository linkChatRepository;

@@ -6,9 +6,7 @@ import edu.java.service.LinkUpdater;
 import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class JdbcLinkUpdater implements LinkUpdater {
     private final JdbcLinkRepository jdbcLinkRepository;

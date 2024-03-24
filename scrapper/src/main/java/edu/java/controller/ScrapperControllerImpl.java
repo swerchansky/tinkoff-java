@@ -31,19 +31,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 public class ScrapperControllerImpl implements ScrapperController {
-    private final LinkService jdbcLinkService;
-    private final ChatService jdbcChatService;
+    private final LinkService linkService;
+    private final ChatService chatService;
     private final GithubClient githubClient;
     private final StackOverflowClient stackOverflowClient;
 
     @Override
     public void addChat(long id) {
-        jdbcChatService.register(id);
+        chatService.register(id);
     }
 
     @Override
     public ListLinksResponse getLinks(long id) {
-        List<Link> links = jdbcLinkService.findLinks(id);
+        List<Link> links = linkService.findLinks(id);
         List<LinkResponse> linkResponses = links.stream().map(link -> new LinkResponse(link.getUrl())).toList();
         return new ListLinksResponse(linkResponses, linkResponses.size());
     }
@@ -56,7 +56,7 @@ public class ScrapperControllerImpl implements ScrapperController {
         if (linkInfo == null) {
             throw new LastUpdateTimeUnresolvedException();
         }
-        jdbcLinkService.add(url, id, linkInfo.getLastUpdate(), linkInfo.getStarCount(), linkInfo.getAnswerCount());
+        linkService.add(url, id, linkInfo.getLastUpdate(), linkInfo.getStarCount(), linkInfo.getAnswerCount());
         return new LinkResponse(url);
     }
 
@@ -64,10 +64,10 @@ public class ScrapperControllerImpl implements ScrapperController {
     public LinkResponse deleteLink(long id, RemoveLinkRequest link) {
         LinkParserResult linkParserResult = getLinkParserResult(link.getLink());
         URI url = getUri(linkParserResult);
-        if (jdbcLinkService.findLinkWithId(url, id) == null) {
+        if (linkService.findLinkWithId(url, id) == null) {
             throw new LinkNotTrackedException();
         }
-        jdbcLinkService.remove(url, id);
+        linkService.remove(url, id);
         return new LinkResponse(url);
     }
 

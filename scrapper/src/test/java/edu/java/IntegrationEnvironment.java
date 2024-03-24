@@ -93,7 +93,6 @@ public abstract class IntegrationEnvironment {
 
     @Configuration
     public static class JpaConfig {
-        private static final String USERNAME_PASSWORD = "postgres";
         private static final String CHECKED_DATE_COLUMN = "checked_date";
         private static final String UPDATED_DATE_COLUMN = "updated_date";
         private static final String ANSWER_COUNT_COLUMN = "answer_count";

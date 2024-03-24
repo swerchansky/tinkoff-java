@@ -2,7 +2,7 @@ package edu.java.service.jdbc;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
-import edu.java.configuration.DataBaseConfiguration;
+import edu.java.configuration.db.DataBaseConfiguration;
 import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.domain.dto.LinkChat;

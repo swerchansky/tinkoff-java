@@ -5,9 +5,7 @@ import edu.java.domain.repository.jpa.JpaChatRepository;
 import edu.java.service.ChatService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-@Service
 @RequiredArgsConstructor
 public class JpaChatService implements ChatService {
     private final JpaChatRepository jpaChatRepository;

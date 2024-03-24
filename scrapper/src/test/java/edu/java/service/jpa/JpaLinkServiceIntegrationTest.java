@@ -24,8 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class JpaLinkServiceIntegrationTest extends IntegrationEnvironment {
     @Autowired
-    private JpaLinkRepository jpaLinkRepository;
-    @Autowired
     private JpaLinkService linkService;
 
     @Test
