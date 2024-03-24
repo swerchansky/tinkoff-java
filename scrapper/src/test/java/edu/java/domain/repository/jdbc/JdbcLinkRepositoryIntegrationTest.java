@@ -2,12 +2,11 @@ package edu.java.domain.repository.jdbc;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
-import edu.java.configuration.DataBaseConfiguration;
+import edu.java.configuration.db.DataBaseConfiguration;
 import edu.java.domain.dto.Link;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.List;
-import edu.java.domain.repository.jdbc.JdbcLinkRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

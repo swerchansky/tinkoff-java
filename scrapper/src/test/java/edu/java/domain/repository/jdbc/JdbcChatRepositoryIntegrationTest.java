@@ -2,11 +2,10 @@ package edu.java.domain.repository.jdbc;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
-import edu.java.configuration.DataBaseConfiguration;
+import edu.java.configuration.db.DataBaseConfiguration;
 import edu.java.domain.dto.Chat;
 import java.util.List;
 
-import edu.java.domain.repository.jdbc.JdbcChatRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

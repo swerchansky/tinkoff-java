@@ -2,7 +2,7 @@ package edu.java.domain.repository.jooq;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
-import edu.java.configuration.DataBaseConfiguration;
+import edu.java.configuration.db.DataBaseConfiguration;
 import edu.java.domain.dto.Link;
 import java.net.URI;
 import java.time.OffsetDateTime;
