@@ -2,6 +2,16 @@ app:
   telegram-token: ${token}
   baseUrls:
     scrapper: http://localhost:8080
+  rateLimiter:
+    enable: true
+    limit: 50
+    refillTime: 50
+  retry:
+    backoffPolicy: fixed
+    attempts: 4
+    delay: 10000
+    jitter: 0.5
+    codes: 400, 406, 500
 
 spring:
   application:
