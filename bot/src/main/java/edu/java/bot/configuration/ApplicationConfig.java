@@ -28,7 +28,7 @@ public record ApplicationConfig(
     public record RateLimiter(
         boolean enable,
         @NotNull Integer limit,
-        @NotNull Integer refillTime
+        @NotNull Integer refill
     ) {
     }
 

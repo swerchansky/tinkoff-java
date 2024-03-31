@@ -5,9 +5,9 @@ app:
   rateLimiter:
     enable: true
     limit: 50
-    refillTime: 50
+    refill: 50
   retry:
-    backoffPolicy: fixed
+    backoffPolicy: exponential
     attempts: 4
     delay: 10000
     jitter: 0.5
