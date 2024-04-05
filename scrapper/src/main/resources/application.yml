@@ -18,8 +18,15 @@ app:
     delay: 10000
     jitter: 0.5
     codes: 400, 500
+  topic:
+    name: "bot_updates"
+    partitions: 10
+    replicas: 1
+  useQueue: true
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: scrapper
   datasource:
@@ -31,6 +38,8 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+  kafka:
+    bootstrapAddress: localhost:9092
 
 server:
   port: 8080
