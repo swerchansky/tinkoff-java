@@ -12,12 +12,21 @@ app:
     delay: 10000
     jitter: 0.5
     codes: 400, 406, 500
+  topic:
+    name: "bot_updates"
+    partitions: 10
+    replicas: 1
 
 spring:
   application:
     name: bot
   jackson:
     time-zone: UTC
+  kafka:
+    bootstrapAddress: localhost:2456
+    consumer:
+      groupId: 1
+      autoOffsetReset: earliest
 
 server:
   port: 8090

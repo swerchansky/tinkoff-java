@@ -18,6 +18,10 @@ app:
     delay: 10000
     jitter: 0.5
     codes: 400, 500
+  topic:
+    name: "bot_updates"
+    partitions: 10
+    replicas: 1
 
 spring:
   application:
@@ -31,6 +35,8 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+  kafka:
+    bootstrapServers: localhost:2456
 
 server:
   port: 8080
