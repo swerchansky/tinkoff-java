@@ -25,6 +25,8 @@ app:
   useQueue: true
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: scrapper
   datasource:
