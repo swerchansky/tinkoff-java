@@ -22,6 +22,7 @@ app:
     name: "bot_updates"
     partitions: 10
     replicas: 1
+  useQueue: true
 
 spring:
   application:
