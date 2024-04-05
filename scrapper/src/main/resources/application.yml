@@ -37,7 +37,7 @@ spring:
       ddl-auto: create
     show-sql: true
   kafka:
-    bootstrapServers: localhost:2456
+    bootstrapAddress: localhost:9092
 
 server:
   port: 8080
