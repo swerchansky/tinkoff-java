@@ -16,6 +16,10 @@ app:
     name: "bot_updates"
     partitions: 10
     replicas: 1
+  deadTopic:
+    name: "bot_updates_dlq"
+    partitions: 10
+    replicas: 1
 
 spring:
   application:

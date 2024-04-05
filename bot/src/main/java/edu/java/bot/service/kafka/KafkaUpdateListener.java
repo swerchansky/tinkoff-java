@@ -1,4 +1,4 @@
-package edu.java.bot.service.listener;
+package edu.java.bot.service.kafka;
 
 import edu.java.bot.controller.dto.LinkUpdateRequest;
 import edu.java.bot.service.LinkUpdateHandler;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KafkaUpdateListener {
     private final LinkUpdateHandler linkUpdateHandler;
+    private final DeadLetterProducer deadLetterProducer;
 
     @KafkaListener(
         topics = "${app.topic.name}",
@@ -18,7 +19,8 @@ public class KafkaUpdateListener {
     public void listen(LinkUpdateRequest request) {
         try {
             linkUpdateHandler.handle(request);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            deadLetterProducer.sendToDeadLetterQueue(request);
         }
     }
 }

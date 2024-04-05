@@ -43,6 +43,14 @@ public class KafkaConfiguration {
     }
 
     @Bean
+    public NewTopic deadLetterTopic() {
+        return TopicBuilder.name(applicationConfig.deadTopic().name())
+            .partitions(applicationConfig.deadTopic().partitions())
+            .replicas(applicationConfig.deadTopic().replicas())
+            .build();
+    }
+
+    @Bean
     public ConsumerFactory<String, LinkUpdateRequest> consumerFactory() {
         var jsonDeserializer = new JsonDeserializer<>(LinkUpdateRequest.class);
         jsonDeserializer.setRemoveTypeHeaders(true);

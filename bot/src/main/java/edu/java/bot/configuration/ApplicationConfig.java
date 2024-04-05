@@ -17,7 +17,8 @@ public record ApplicationConfig(
     BaseUrls baseUrls,
     RateLimiter rateLimiter,
     Retry retry,
-    Topic topic
+    Topic topic,
+    Topic deadTopic
 ) {
     public record BaseUrls(
         @NotEmpty
