@@ -10,6 +10,7 @@ import edu.java.bot.command.Command;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ class BotUpdatesListenerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        botUpdatesListener = new BotUpdatesListener(telegramBot, commands);
+        botUpdatesListener = new BotUpdatesListener(telegramBot, commands, new SimpleMeterRegistry().counter(""));
     }
 
     @Test

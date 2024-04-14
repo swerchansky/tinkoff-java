@@ -8,6 +8,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.command.Command;
+import io.micrometer.core.instrument.Counter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class BotUpdatesListener implements UpdatesListener {
     private final TelegramBot telegramBot;
     private final List<Command> commands;
+    private final Counter metricsCounter;
 
     @Override
     public int process(List<Update> updates) {
@@ -39,10 +41,16 @@ public class BotUpdatesListener implements UpdatesListener {
             .findFirst()
             .ifPresentOrElse(
                 command -> command.execute(chatId, commandArguments.arguments).subscribe(
-                    responseText -> telegramBot.execute(createMessage(chatId, responseText)),
+                    responseText -> {
+                        telegramBot.execute(createMessage(chatId, responseText));
+                        metricsCounter.increment();
+                    },
                     error -> log.error("Error while executing command", error)
                 ),
-                () -> telegramBot.execute(new SendMessage(chatId, "Unknown command"))
+                () -> {
+                    telegramBot.execute(new SendMessage(chatId, "Unknown command"));
+                    metricsCounter.increment(commands.size());
+                }
             );
     }
 

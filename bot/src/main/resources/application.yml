@@ -35,5 +35,26 @@ spring:
 server:
   port: 8090
 
+management:
+  server:
+    port: 8999
+  endpoint:
+    info.enabled: true
+    health.enabled: true
+    prometheus.enabled: true
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - info
+          - health
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 logging:
   config: classpath:log4j2-plain.xml
