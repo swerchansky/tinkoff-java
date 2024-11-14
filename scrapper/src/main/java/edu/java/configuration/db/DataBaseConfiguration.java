@@ -1,4 +1,4 @@
-package edu.java.configuration;
+package edu.java.configuration.db;
 
 import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;

@@ -1,8 +1,7 @@
 package edu.java.bot.controller;
 
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.controller.dto.LinkUpdateRequest;
+import edu.java.bot.service.LinkUpdateHandler;
 import java.net.URI;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,14 +15,14 @@ import static org.mockito.Mockito.verify;
 
 class BotControllerImplTest {
     @Mock
-    private TelegramBot telegramBot;
+    private LinkUpdateHandler linkUpdateHandler;
 
     private BotControllerImpl botController;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        botController = new BotControllerImpl(telegramBot);
+        botController = new BotControllerImpl(linkUpdateHandler);
     }
 
     @Test
@@ -36,6 +35,6 @@ class BotControllerImplTest {
 
         botController.update(request);
 
-        verify(telegramBot, times(2)).execute(any(SendMessage.class));
+        verify(linkUpdateHandler, times(1)).handle(any(LinkUpdateRequest.class));
     }
 }

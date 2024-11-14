@@ -1,6 +1,5 @@
 package edu.java.scheduler;
 
-import edu.java.client.BotClient;
 import edu.java.client.GithubClient;
 import edu.java.client.StackOverflowClient;
 import edu.java.client.dto.GithubRepositoryResponse;
@@ -10,6 +9,7 @@ import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.service.LinkService;
 import edu.java.service.LinkUpdater;
+import edu.java.service.sender.UpdateSender;
 import edu.java.utils.parser.LinkParser;
 import edu.java.utils.parser.result.GithubLinkParserResult;
 import edu.java.utils.parser.result.StackOverflowlinkParserResult;
@@ -31,19 +31,19 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LinkUpdaterScheduler {
     private static final String DEFAULT_MESSAGE = "new changes detected";
-    private final LinkUpdater jdbcLinkUpdater;
-    private final LinkService jdbcLinkService;
-    private final BotClient botClient;
+    private final LinkUpdater linkUpdater;
+    private final LinkService linkService;
+    private final UpdateSender updateSender;
     private final GithubClient githubClient;
     private final StackOverflowClient stackOverflowClient;
 
     @Scheduled(fixedDelayString = "#{@'app-edu.java.configuration.ApplicationConfig'.scheduler.interval}")
     public void update() {
         log.debug("Updating links...");
-        List<Link> oldLinks = jdbcLinkUpdater.getOldLinks();
+        List<Link> oldLinks = linkUpdater.getOldLinks();
         oldLinks.forEach(link -> {
             URI url = link.getUrl();
-            List<Long> chatIds = jdbcLinkService.findChats(url).stream().map(Chat::getChatId).toList();
+            List<Long> chatIds = linkService.findChats(url).stream().map(Chat::getChatId).toList();
             switch (LinkParser.parseLinkInfo(url)) {
                 case GithubLinkParserResult result ->
                     githubClient.getRepositoryInfo(result.getOwner(), result.getRepositoryName()).subscribe(
@@ -58,7 +58,7 @@ public class LinkUpdaterScheduler {
                 case null, default -> onError(link).accept(new IllegalArgumentException("Unsupported link type"));
             }
         });
-        jdbcLinkUpdater.updateCheckedDate(oldLinks);
+        linkUpdater.updateCheckedDate(oldLinks);
     }
 
     private static Consumer<Throwable> onError(Link link) {
@@ -67,7 +67,7 @@ public class LinkUpdaterScheduler {
 
     private Consumer<GithubRepositoryResponse> onGithubSuccessResponse(URI url, List<Long> chatIds) {
         return repository -> {
-            Link link = jdbcLinkService.findLink(url);
+            Link link = linkService.findLink(url);
             String message = null;
             if (repository.getStarCount() > link.getStarCount()) {
                 message = "new star added, current count: " + repository.getStarCount();
@@ -86,7 +86,7 @@ public class LinkUpdaterScheduler {
         List<Long> chatIds
     ) {
         return question -> {
-            Link link = jdbcLinkService.findLink(url);
+            Link link = linkService.findLink(url);
             String message = null;
             if (question.getQuestions().isEmpty()) {
                 return;
@@ -106,12 +106,12 @@ public class LinkUpdaterScheduler {
 
     private void sendMessage(URI url, List<Long> chatIds, String message) {
         LinkUpdateRequest request = new LinkUpdateRequest(url, message, chatIds);
-        botClient.update(request).subscribe();
+        updateSender.send(request);
     }
 
     private void updateLink(Link link, Integer answerCount, Integer starCount, OffsetDateTime updatedAt) {
-        jdbcLinkUpdater.updateAnswerCount(link, answerCount);
-        jdbcLinkUpdater.updateStarCount(link, starCount);
-        jdbcLinkUpdater.updateUpdatedDate(link, updatedAt);
+        linkUpdater.updateAnswerCount(link, answerCount);
+        linkUpdater.updateStarCount(link, starCount);
+        linkUpdater.updateUpdatedDate(link, updatedAt);
     }
 }

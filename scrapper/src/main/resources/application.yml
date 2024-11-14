@@ -7,8 +7,26 @@ app:
     enable: true
     interval: 30s
     force-check-delay: 10s
+  database-access-type: jdbc
+  rateLimiter:
+    enable: true
+    limit: 50
+    refill: 50
+  retry:
+    backoffPolicy: exponential
+    attempts: 4
+    delay: 10000
+    jitter: 0.5
+    codes: 400, 500
+  topic:
+    name: "bot_updates"
+    partitions: 10
+    replicas: 1
+  useQueue: true
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   application:
     name: scrapper
   datasource:
@@ -16,9 +34,36 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: postgres
     password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+  kafka:
+    bootstrapAddress: localhost:9092
 
 server:
   port: 8080
+
+management:
+  server:
+    port: 8998
+  endpoint:
+    info.enabled: true
+    health.enabled: true
+    prometheus.enabled: true
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - info
+          - health
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 logging:
   config: classpath:log4j2-plain.xml
