@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Component
 @RequiredArgsConstructor
@@ -22,13 +23,15 @@ public class ScrapperClient {
     private static final String CHAT_ENDPOINT = "/tg-chat/{id}";
     private static final String LINKS_ENDPOINT = "/links";
     private final WebClient scrapperWebClient;
+    private final Retry retry;
 
     public Mono<Void> registerChat(long id) {
-        return sendChatRequest(HttpMethod.POST, id);
-    }
-
-    public Mono<Void> deleteChat(long id) {
-        return sendChatRequest(HttpMethod.DELETE, id);
+        return scrapperWebClient.post()
+            .uri(CHAT_ENDPOINT, id)
+            .retrieve()
+            .onStatus(this::isApiError, this::handleApiError)
+            .bodyToMono(Void.class)
+            .retryWhen(retry);
     }
 
     public Mono<ListLinksResponse> getLinks(long id) {
@@ -37,23 +40,16 @@ public class ScrapperClient {
             .header(TG_CHAT_ID_HEADER, String.valueOf(id))
             .retrieve()
             .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(ListLinksResponse.class);
+            .bodyToMono(ListLinksResponse.class)
+            .retryWhen(retry);
     }
 
-    public Mono<LinkResponse> addLink(long id, String url) {
-        return sendLinkRequestWithBody(HttpMethod.POST, id, new AddLinkRequest(URI.create(url)));
+    public Mono<LinkResponse> addLink(long id, URI url) {
+        return sendLinkRequestWithBody(HttpMethod.POST, id, new AddLinkRequest(url));
     }
 
-    public Mono<LinkResponse> deleteLink(long id, String url) {
-        return sendLinkRequestWithBody(HttpMethod.DELETE, id, new RemoveLinkRequest(URI.create(url)));
-    }
-
-    private Mono<Void> sendChatRequest(HttpMethod method, long id) {
-        return scrapperWebClient.method(method)
-            .uri(CHAT_ENDPOINT, id)
-            .retrieve()
-            .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(Void.class);
+    public Mono<LinkResponse> deleteLink(long id, URI url) {
+        return sendLinkRequestWithBody(HttpMethod.DELETE, id, new RemoveLinkRequest(url));
     }
 
     private Mono<LinkResponse> sendLinkRequestWithBody(HttpMethod method, long id, Object requestBody) {
@@ -63,17 +59,13 @@ public class ScrapperClient {
             .bodyValue(requestBody)
             .retrieve()
             .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(LinkResponse.class);
+            .bodyToMono(LinkResponse.class)
+            .retryWhen(retry);
     }
 
     private Mono<ApiErrorException> handleApiError(ClientResponse clientResponse) {
         return clientResponse.bodyToMono(ApiErrorResponse.class)
-            .map(apiErrorResponse ->
-                new ApiErrorException(
-                    apiErrorResponse.description + ": " + apiErrorResponse.exceptionMessage,
-                    Integer.parseInt(apiErrorResponse.code)
-                )
-            );
+            .map(apiErrorResponse -> new ApiErrorException(apiErrorResponse.description, apiErrorResponse));
     }
 
     private boolean isApiError(HttpStatusCode code) {

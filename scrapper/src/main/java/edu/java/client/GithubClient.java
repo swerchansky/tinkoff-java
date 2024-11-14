@@ -6,11 +6,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Component
 @RequiredArgsConstructor
 public class GithubClient {
     private final WebClient githubWebClient;
+    private final Retry retry;
 
     public Mono<GithubRepositoryResponse> getRepositoryInfo(String owner, String repositoryName) {
         return githubWebClient.get()
@@ -18,11 +20,9 @@ public class GithubClient {
             .retrieve()
             .onStatus(
                 status -> status.is4xxClientError() || status.is5xxServerError(),
-                clientResponse -> Mono.error(new ApiErrorException(
-                    "Github API error",
-                    clientResponse.statusCode().value()
-                ))
+                clientResponse -> Mono.error(new ApiErrorException("Github API error"))
             )
-            .bodyToMono(GithubRepositoryResponse.class);
+            .bodyToMono(GithubRepositoryResponse.class)
+            .retryWhen(retry);
     }
 }

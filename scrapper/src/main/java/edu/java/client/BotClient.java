@@ -9,29 +9,27 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Component
 @RequiredArgsConstructor
 public class BotClient {
     private final WebClient botWebClient;
+    private final Retry retry;
 
     public Mono<Void> update(LinkUpdateRequest linkUpdateRequest) {
         return botWebClient.post()
-            .uri("/updates")
+            .uri("/update")
             .bodyValue(linkUpdateRequest)
             .retrieve()
             .onStatus(this::isApiError, this::handleApiError)
-            .bodyToMono(Void.class);
+            .bodyToMono(Void.class)
+            .retryWhen(retry);
     }
 
     private Mono<ApiErrorException> handleApiError(ClientResponse clientResponse) {
         return clientResponse.bodyToMono(ApiErrorResponse.class)
-            .map(apiErrorResponse ->
-                new ApiErrorException(
-                    apiErrorResponse.description + ": " + apiErrorResponse.exceptionMessage,
-                    Integer.parseInt(apiErrorResponse.code)
-                )
-            );
+            .map(apiErrorResponse -> new ApiErrorException(apiErrorResponse.description, apiErrorResponse));
     }
 
     private boolean isApiError(HttpStatusCode code) {

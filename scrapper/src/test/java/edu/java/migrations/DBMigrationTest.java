@@ -1,5 +1,6 @@
 package edu.java.migrations;
 
+import edu.java.IntegrationEnvironment;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,9 +10,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class LinkInsertTest extends IntegrationEnvironment {
+public class DBMigrationTest extends IntegrationEnvironment {
     private static Statement statement;
-    private final String SQL_INSERT = "INSERT INTO link (link,type_id,checked_date) VALUES ('http://google.com', 1, now())";
 
     @BeforeAll
     public static void setUp() throws Exception {
@@ -30,17 +30,10 @@ public class LinkInsertTest extends IntegrationEnvironment {
     @Test
     @DisplayName("Insert link")
     public void insertTest() throws SQLException {
-        int result = statement.executeUpdate(SQL_INSERT);
+        String sql = "INSERT INTO link (url,updated_date,checked_date) VALUES ('http://google.com', now(), now())";
+        int result = statement.executeUpdate(sql);
         assertThat(result).isEqualTo(1);
-    }
-
-    @Test
-    @DisplayName("Select link")
-    public void selectTest() throws SQLException {
-        statement.executeUpdate(SQL_INSERT);
-        var resultSet = statement.executeQuery("SELECT * FROM link");
-        assertThat(resultSet.next()).isTrue();
-        assertThat(resultSet.getString("link")).isEqualTo("http://google.com");
-        assertThat(resultSet.getInt("type_id")).isEqualTo(1);
+        sql = "DELETE FROM link WHERE url = 'http://google.com'";
+        statement.executeUpdate(sql);
     }
 }

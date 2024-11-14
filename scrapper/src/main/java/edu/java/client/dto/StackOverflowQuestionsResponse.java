@@ -4,23 +4,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@AllArgsConstructor
+@NoArgsConstructor
 public class StackOverflowQuestionsResponse {
     @JsonProperty("items")
     public List<QuestionResponse> questions;
 
     @Data
-    @EqualsAndHashCode(callSuper = false)
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class QuestionResponse {
         public String owner;
         @JsonProperty("title")
         public String title;
         @JsonProperty("last_activity_date")
         public OffsetDateTime updatedAt;
+        @JsonProperty("answer_count")
+        public int answerCount;
 
         @JsonProperty("owner")
         public void setOwner(Map<String, String> owner) {

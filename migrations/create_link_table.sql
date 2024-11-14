@@ -3,8 +3,9 @@
 --changeset CREATE:1
 create table if not exists link
 (
-    id           bigserial primary key,
-    link         text      not null,
-    type_id      integer   not null,
-    checked_date timestamp not null
+    url          text primary key,
+    star_count   integer,
+    answer_count integer,
+    updated_date timestamp without time zone not null,
+    checked_date timestamp without time zone not null
 );
