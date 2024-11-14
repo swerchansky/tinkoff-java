@@ -1,6 +1,5 @@
 package edu.java.scheduler;
 
-import edu.java.client.BotClient;
 import edu.java.client.GithubClient;
 import edu.java.client.StackOverflowClient;
 import edu.java.client.dto.GithubRepositoryResponse;
@@ -10,6 +9,7 @@ import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.service.LinkService;
 import edu.java.service.LinkUpdater;
+import edu.java.service.sender.UpdateSender;
 import edu.java.utils.parser.LinkParser;
 import edu.java.utils.parser.result.GithubLinkParserResult;
 import edu.java.utils.parser.result.StackOverflowlinkParserResult;
@@ -33,7 +33,7 @@ public class LinkUpdaterScheduler {
     private static final String DEFAULT_MESSAGE = "new changes detected";
     private final LinkUpdater linkUpdater;
     private final LinkService linkService;
-    private final BotClient botClient;
+    private final UpdateSender updateSender;
     private final GithubClient githubClient;
     private final StackOverflowClient stackOverflowClient;
 
@@ -106,7 +106,7 @@ public class LinkUpdaterScheduler {
 
     private void sendMessage(URI url, List<Long> chatIds, String message) {
         LinkUpdateRequest request = new LinkUpdateRequest(url, message, chatIds);
-        botClient.update(request).subscribe();
+        updateSender.send(request);
     }
 
     private void updateLink(Link link, Integer answerCount, Integer starCount, OffsetDateTime updatedAt) {
