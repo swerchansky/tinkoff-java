@@ -1,6 +1,5 @@
 package edu.java.scheduler;
 
-import edu.java.client.BotClient;
 import edu.java.client.GithubClient;
 import edu.java.client.StackOverflowClient;
 import edu.java.client.dto.GithubRepositoryResponse;
@@ -10,6 +9,7 @@ import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.service.LinkService;
 import edu.java.service.LinkUpdater;
+import edu.java.service.sender.UpdateSender;
 import edu.java.utils.parser.LinkParser;
 import edu.java.utils.parser.result.GithubLinkParserResult;
 import edu.java.utils.parser.result.StackOverflowlinkParserResult;
@@ -30,9 +30,10 @@ import org.springframework.stereotype.Component;
 @ConditionalOnProperty(name = "app.scheduler.enable")
 @RequiredArgsConstructor
 public class LinkUpdaterScheduler {
+    private static final String DEFAULT_MESSAGE = "new changes detected";
     private final LinkUpdater linkUpdater;
     private final LinkService linkService;
-    private final BotClient botClient;
+    private final UpdateSender updateSender;
     private final GithubClient githubClient;
     private final StackOverflowClient stackOverflowClient;
 
@@ -66,10 +67,16 @@ public class LinkUpdaterScheduler {
 
     private Consumer<GithubRepositoryResponse> onGithubSuccessResponse(URI url, List<Long> chatIds) {
         return repository -> {
-            if (!repository.getUpdatedAt().isEqual(linkService.findLink(url).getUpdatedDate())) {
-                linkUpdater.updateUpdatedDate(linkService.findLink(url), repository.getUpdatedAt());
-                LinkUpdateRequest request = new LinkUpdateRequest(url, repository.getName(), chatIds);
-                botClient.update(request).subscribe();
+            Link link = linkService.findLink(url);
+            String message = null;
+            if (repository.getStarCount() > link.getStarCount()) {
+                message = "new star added, current count: " + repository.getStarCount();
+            } else if (!repository.getUpdatedAt().isEqual(link.getUpdatedDate())) {
+                message = DEFAULT_MESSAGE;
+            }
+            if (message != null) {
+                updateLink(link, null, repository.getStarCount(), repository.getUpdatedAt());
+                sendMessage(url, chatIds, message);
             }
         };
     }
@@ -79,13 +86,32 @@ public class LinkUpdaterScheduler {
         List<Long> chatIds
     ) {
         return question -> {
-            OffsetDateTime currentUpdatedDate = question.getQuestions().getFirst().getUpdatedAt();
-            if (!currentUpdatedDate.isEqual(linkService.findLink(url).getUpdatedDate())) {
-                linkUpdater.updateUpdatedDate(linkService.findLink(url), currentUpdatedDate);
-                LinkUpdateRequest request =
-                    new LinkUpdateRequest(url, question.questions.getFirst().getTitle(), chatIds);
-                botClient.update(request).subscribe();
+            Link link = linkService.findLink(url);
+            String message = null;
+            if (question.getQuestions().isEmpty()) {
+                return;
+            }
+            StackOverflowQuestionsResponse.QuestionResponse currentQuestion = question.getQuestions().getFirst();
+            if (currentQuestion.getAnswerCount() > link.getAnswerCount()) {
+                message = "new answer added, current count: " + currentQuestion.getAnswerCount();
+            } else if (!currentQuestion.getUpdatedAt().isEqual(link.getUpdatedDate())) {
+                message = DEFAULT_MESSAGE;
+            }
+            if (message != null) {
+                updateLink(link, currentQuestion.getAnswerCount(), null, currentQuestion.getUpdatedAt());
+                sendMessage(url, chatIds, message);
             }
         };
+    }
+
+    private void sendMessage(URI url, List<Long> chatIds, String message) {
+        LinkUpdateRequest request = new LinkUpdateRequest(url, message, chatIds);
+        updateSender.send(request);
+    }
+
+    private void updateLink(Link link, Integer answerCount, Integer starCount, OffsetDateTime updatedAt) {
+        linkUpdater.updateAnswerCount(link, answerCount);
+        linkUpdater.updateStarCount(link, starCount);
+        linkUpdater.updateUpdatedDate(link, updatedAt);
     }
 }

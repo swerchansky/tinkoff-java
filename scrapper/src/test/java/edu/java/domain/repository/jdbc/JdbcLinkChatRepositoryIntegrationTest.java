@@ -1,8 +1,8 @@
-package edu.java.domain.repository;
+package edu.java.domain.repository.jdbc;
 
 import edu.java.IntegrationEnvironment;
 import edu.java.IntegrationEnvironment.IntegrationEnvironmentConfiguration;
-import edu.java.configuration.DataBaseConfiguration;
+import edu.java.configuration.db.DataBaseConfiguration;
 import edu.java.domain.dto.Chat;
 import edu.java.domain.dto.Link;
 import edu.java.domain.dto.LinkChat;
@@ -20,34 +20,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = {
     IntegrationEnvironmentConfiguration.class,
     DataBaseConfiguration.class,
-    LinkChatRepository.class,
-    ChatRepository.class,
-    LinkRepository.class
+    JdbcLinkChatRepository.class,
+    JdbcChatRepository.class,
+    JdbcLinkRepository.class
 })
-class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
+class JdbcLinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     private static final URI URL = URI.create("http://google.com");
     @Autowired
-    private LinkChatRepository linkChatRepository;
+    private JdbcLinkChatRepository jdbcLinkChatRepository;
     @Autowired
-    private ChatRepository chatRepository;
+    private JdbcChatRepository jdbcChatRepository;
     @Autowired
-    private LinkRepository linkRepository;
+    private JdbcLinkRepository jdbcLinkRepository;
 
     @Test
     @Transactional
     @Rollback
     @DisplayName("add link chat")
     public void add() {
-        Link link = linkRepository.add(URL, OffsetDateTime.now());
-        Chat chat = chatRepository.add(1L);
-        LinkChat expected = linkChatRepository.add(URL, 1L);
-        List<LinkChat> actualLinkChats = linkChatRepository.findAll();
+        Link link = jdbcLinkRepository.add(URL, OffsetDateTime.now(), 0, 0);
+        Chat chat = jdbcChatRepository.add(1L);
+        LinkChat expected = jdbcLinkChatRepository.add(URL, 1L);
+        List<LinkChat> actualLinkChats = jdbcLinkChatRepository.findAll();
 
         assertThat(actualLinkChats).hasSize(1);
         assertThat(actualLinkChats).containsExactly(expected);
         LinkChat actual = actualLinkChats.getFirst();
-        assertThat(actual.getLink()).isEqualTo(link);
-        assertThat(actual.getChat()).isEqualTo(chat);
+        assertThat(actual.getChatId()).isEqualTo(chat.getChatId());
+        assertThat(actual.getUrl()).isEqualTo(link.getUrl());
+        assertThat(actual.getCheckedDate()).isEqualTo(link.getCheckedDate());
+        assertThat(actual.getUpdatedDate()).isEqualTo(link.getUpdatedDate());
+        assertThat(actual.getAnswerCount()).isEqualTo(link.getAnswerCount());
+        assertThat(actual.getStarCount()).isEqualTo(link.getStarCount());
     }
 
     @Test
@@ -55,11 +59,11 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("remove link chat")
     public void remove() {
-        linkRepository.add(URL, OffsetDateTime.now());
-        chatRepository.add(1L);
-        linkChatRepository.add(URL, 1L);
-        linkChatRepository.remove(URL, 1L);
-        List<LinkChat> actualLinkChats = linkChatRepository.findAll();
+        jdbcLinkRepository.add(URL, OffsetDateTime.now(), 0, 0);
+        jdbcChatRepository.add(1L);
+        jdbcLinkChatRepository.add(URL, 1L);
+        jdbcLinkChatRepository.remove(URL, 1L);
+        List<LinkChat> actualLinkChats = jdbcLinkChatRepository.findAll();
 
         assertThat(actualLinkChats).isEmpty();
     }
@@ -69,7 +73,7 @@ class LinkChatRepositoryIntegrationTest extends IntegrationEnvironment {
     @Rollback
     @DisplayName("find link chat by unknown url and chat id")
     public void findUnknown() {
-        LinkChat actual = linkChatRepository.find(URL, 1L);
+        LinkChat actual = jdbcLinkChatRepository.find(URL, 1L);
 
         assertThat(actual).isNull();
     }

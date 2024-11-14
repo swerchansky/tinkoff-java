@@ -19,17 +19,11 @@ public class ExceptionApiHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    @ExceptionHandler(LinkNotSupportedException.class)
-    public ResponseEntity<ApiErrorResponse> handleLinkNotSupportedException(LinkNotSupportedException exception) {
-        return createCustomErrorResponse(exception);
-    }
-
-    @ExceptionHandler(LastUpdateTimeUnresolvedException.class)
-    public ResponseEntity<ApiErrorResponse> handleTimeUnresolvedException(LastUpdateTimeUnresolvedException exception) {
-        return createCustomErrorResponse(exception);
-    }
-
-    @ExceptionHandler(LinkNotTrackedException.class)
+    @ExceptionHandler({
+        LinkNotSupportedException.class,
+        LinkNotTrackedException.class,
+        LastUpdateTimeUnresolvedException.class
+    })
     public ResponseEntity<ApiErrorResponse> handleTimeUnresolvedException(LinkNotTrackedException exception) {
         return createCustomErrorResponse(exception);
     }
