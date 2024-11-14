@@ -16,7 +16,9 @@ public record ApplicationConfig(
     String telegramToken,
     BaseUrls baseUrls,
     RateLimiter rateLimiter,
-    Retry retry
+    Retry retry,
+    Topic topic,
+    Topic deadTopic
 ) {
     public record BaseUrls(
         @NotEmpty
@@ -38,6 +40,13 @@ public record ApplicationConfig(
         @NotNull Duration delay,
         @NotNull Double jitter,
         Set<Integer> codes
+    ) {
+    }
+
+    public record Topic(
+        @NotNull String name,
+        @NotNull Integer partitions,
+        @NotNull Integer replicas
     ) {
     }
 }

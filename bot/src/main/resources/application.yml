@@ -12,15 +12,49 @@ app:
     delay: 10000
     jitter: 0.5
     codes: 400, 406, 500
+  topic:
+    name: "bot_updates"
+    partitions: 10
+    replicas: 1
+  deadTopic:
+    name: "bot_updates_dlq"
+    partitions: 10
+    replicas: 1
 
 spring:
   application:
     name: bot
   jackson:
     time-zone: UTC
+  kafka:
+    bootstrapAddress: localhost:9092
+    consumer:
+      groupId: 1
+      autoOffsetReset: earliest
 
 server:
   port: 8090
+
+management:
+  server:
+    port: 8999
+  endpoint:
+    info.enabled: true
+    health.enabled: true
+    prometheus.enabled: true
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include:
+          - info
+          - health
+          - prometheus
+      path-mapping:
+        prometheus: "metrics"
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 logging:
   config: classpath:log4j2-plain.xml
